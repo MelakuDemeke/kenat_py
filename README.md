@@ -165,9 +165,15 @@ print(to_geez(2017))  # → ፳፻፲፯
 ## 👨‍💻 Author
 
 **Melaku Demeke**
-GitHub: [@melakud](https://github.com/melakud)
+GitHub: [@MelakuDemeke](https://github.com/MelakuDemeke)
 
 ---
+
+## contributors
+<a href="https://github.com/MelakuDemeke/kenat_py/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=MelakuDemeke/kenat_py" />
+</a>
+
 
 ## 📄 License
 
