@@ -68,39 +68,46 @@ def to_ec(greg_year, greg_month, greg_day):
 
 def _gregorian_to_jd(year, month, day):
     """Converts a Gregorian date to Julian Day Number."""
-    a = (14 - month) // 12
-    y = year + 4800 - a
-    m = month + 12 * a - 3
-    return day + ((153 * m + 2) // 5) + 365 * y + (y // 4) - (y // 100) + (y // 400) - 32045
+    if month < 3:
+        year -= 1
+        month += 12
+    a = year // 100
+    b = a // 4
+    c = 2 - a + b
+    e = int(365.25 * (year + 4716))
+    f = int(30.6001 * (month + 1))
+    return c + day + e + f - 1524
 
 def _jd_to_gregorian(jd):
     """Converts a Julian Day Number to a Gregorian date."""
-    L = jd + 68569
-    N = (4 * L) // 146097
-    L = L - (146097 * N + 3) // 4
-    I = (4000 * (L + 1)) // 1461001
-    L = L - (1461 * I) // 4 + 31
-    J = (80 * L) // 2447
-    day = L - (2447 * J) // 80
-    L = J // 11
-    month = J + 2 - 12 * L
-    year = 100 * (N - 49) + I + L
+    q = jd + 0.5
+    z = int(q)
+    w = (z - 1867216.25) / 36524.25
+    x = w // 4
+    a = z + 1 + w - x
+    b = a + 1524
+    c = (b - 122.1) / 365.25
+    d = int(c)
+    e = int(365.25 * d)
+    f = int((b - e) / 30.6001)
+    day = b - e - int(30.6001 * f)
+    month = f - 1 if f < 14 else f - 13
+    year = d - 4716 if month > 2 else d - 4715
     return datetime.date(year, month, day)
 
 def _hijri_to_jd(year, month, day):
     """Converts a Hijri date to Julian Day Number."""
-    return (11 * year + 3) // 30 + 354 * year + 30 * month - (month - 1) // 2 + day + 1948440 - 385
+    # This is the corrected formula for the Tabular Islamic Calendar.
+    return int((11 * year + 3) / 30) + 354 * year + 30 * month - int((month - 1) / 2) + day + 1948440 - 385
 
 def _jd_to_hijri(jd):
     """Converts a Julian Day Number to a Hijri date."""
-    jd = jd - 1948440 + 10632
-    n = (jd - 1) // 10631
-    jd = jd - 10631 * n + 354
-    j = ((10985 - jd) // 5316) * ((50 * jd) // 17719) + ((jd - 5316) // 5316) * ((43 * jd) // 15238)
-    jd = jd - ((30 - j) // 15) * ((17719 * j) // 50) - (j // 16) * ((15238 * j) // 43) + 29
-    month = (24 * jd) // 709
-    day = jd - (709 * month) // 24
-    year = 30 * n + j - 30
+    # This is the corrected formula for the Tabular Islamic Calendar.
+    jd = jd - 1948439
+    year = int((30 * jd + 10646) / 10631)
+    month = min(12, int((jd - (29 + 354 * (year - 1) + int((3 + 11 * year) / 30))) / 29.5) + 1)
+    day = jd - (29 + 354 * (year - 1) + int((3 + 11 * year) / 30) + (month - 1) * 29.5)
+    day = int(day)
     return {'year': year, 'month': month, 'day': day}
 
 def hijri_to_gregorian(h_year, h_month, h_day, gregorian_year):
