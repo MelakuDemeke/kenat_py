@@ -47,6 +47,7 @@ class MonthGrid:
 
     def generate(self):
         """Generates and returns the structured month grid."""
+        from .kenat import Kenat
         y, m = self.year, self.month
         today_eth = Kenat.now()._ethiopian
         
