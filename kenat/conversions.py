@@ -1,4 +1,5 @@
 import datetime
+import math
 from .utils import (
     is_gregorian_leap_year,
     is_ethiopian_leap_year,
@@ -101,13 +102,17 @@ def _hijri_to_jd(year, month, day):
     return int((11 * year + 3) / 30) + 354 * year + 30 * month - int((month - 1) / 2) + day + 1948440 - 385
 
 def _jd_to_hijri(jd):
-    """Converts a Julian Day Number to a Hijri date."""
-    # This is the corrected formula for the Tabular Islamic Calendar.
-    jd = jd - 1948439
-    year = int((30 * jd + 10646) / 10631)
-    month = min(12, int((jd - (29 + 354 * (year - 1) + int((3 + 11 * year) / 30))) / 29.5) + 1)
-    day = jd - (29 + 354 * (year - 1) + int((3 + 11 * year) / 30) + (month - 1) * 29.5)
-    day = int(day)
+    """Converts a Julian Day Number to a Hijri date using the tabular Islamic calendar."""
+    jd = math.floor(jd) + 0.5  # Ensure it's at start of day
+    jd = jd - 1948439.5
+    year = int((30 * jd + 10646) // 10631)
+    start_of_year = 354 * (year - 1) + math.floor((3 + 11 * year) / 30)
+    day_of_year = int(jd - start_of_year)
+    month = int((day_of_year) // 29.5) + 1
+    if month > 12:
+        month = 12
+    start_of_month = 29.5 * (month - 1)
+    day = int(jd - (start_of_year + start_of_month)) + 1
     return {'year': year, 'month': month, 'day': day}
 
 def hijri_to_gregorian(h_year, h_month, h_day, gregorian_year):
