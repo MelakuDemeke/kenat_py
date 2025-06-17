@@ -16,7 +16,7 @@
 
 **Kenat** (Amharic: ቀናት) is a powerful and authentic Ethiopian calendar library for Python. It offers full support for date conversion, holiday computation (including Bahire Hasab), localized formatting, Geez numerals, and more — all without external dependencies.
 
-> 🚀 Ported from the original [kenat JS library](https://github.com/melaku/kenat).
+> 🚀 Ported from the original [kenat JS library](https://github.com/MelakuDemeke/kenat).
 
 ---
 
