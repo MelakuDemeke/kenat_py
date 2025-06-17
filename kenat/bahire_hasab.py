@@ -108,3 +108,24 @@ def get_bahire_hasab(ethiopian_year, lang='amharic'):
         'nineveh': base['nineveh_date'],
         'movableFeasts': movable_feasts
     }
+
+def get_movable_holiday(holiday_key, ethiopian_year):
+    """
+    Calculates the date of a movable holiday for a given year. 
+
+    Args:
+        holiday_key (str): The key of the holiday (e.g., 'ABIY_TSOME', 'TINSAYE'). 
+        ethiopian_year (int): The Ethiopian year. 
+
+    Returns:
+        dict: An Ethiopian date object {'year', 'month', 'day'}. 
+    """
+    validate_numeric_inputs('get_movable_holiday', ethiopian_year=ethiopian_year)  
+
+    tewsak = MOVABLE_HOLIDAY_TEWSAK.get(holiday_key)  
+    if tewsak is None:  
+        raise UnknownHolidayError(holiday_key)  
+    
+    base = _calculate_bahire_hasab_base(ethiopian_year)  
+
+    return add_days(base['nineveh_date'], tewsak) 
