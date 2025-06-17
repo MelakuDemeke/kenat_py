@@ -47,3 +47,11 @@ def is_ethiopian_leap_year(year):
     """
     return year % 4 == 3
 
+def get_ethiopian_days_in_month(year, month):
+    """
+    Returns the number of days in the given Ethiopian month and year.
+    """
+    if month == 13:
+        return 6 if is_ethiopian_leap_year(year) else 5
+    return 30
+
