@@ -71,3 +71,10 @@ def to_ec(greg_year, greg_month, greg_day):
     
     return {'year': eth_year, 'month': eth_month, 'day': eth_day}
 
+def _gregorian_to_jd(year, month, day):
+    """Converts a Gregorian date to Julian Day Number."""
+    a = (14 - month) // 12
+    y = year + 4800 - a
+    m = month + 12 * a - 3
+    return day + ((153 * m + 2) // 5) + 365 * y + (y // 4) - (y // 100) + (y // 400) - 32045
+
