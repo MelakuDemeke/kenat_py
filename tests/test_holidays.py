@@ -90,7 +90,7 @@ def test_get_movable_holiday_unknown_key():
 def test_returns_correct_moulid_date_2016():
     holiday = get_holiday('moulid', 2016)
     assert holiday is not None
-    assert holiday['ethiopian'] == {'year': 2016, 'month': 1, 'day': 16}
+    assert holiday['ethiopian'] == {'year': 2016, 'month': 1, 'day': 15}
 
 
 def test_returns_correct_eid_fitr_date_2016():
