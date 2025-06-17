@@ -81,3 +81,44 @@ def get_holiday(holiday_key, eth_year, lang='amharic'):
     
     return None  
 
+def get_holidays_in_month(eth_year, eth_month, lang='amharic', filter_by=None):
+    """Gets all holidays for a given Ethiopian month. """
+    validate_numeric_inputs("get_holidays_in_month", eth_year=eth_year, eth_month=eth_month)  
+    if not 1 <= eth_month <= 13:  
+        raise InvalidInputTypeError("get_holidays_in_month", "eth_month", "number between 1 and 13", eth_month)  
+
+    all_holidays_for_month = []  
+    
+    for key in HOLIDAY_INFO.keys():  
+        if key not in ['eidFitr', 'eidAdha', 'moulid']:
+            holiday = get_holiday(key, eth_year, lang)  
+            if holiday and holiday['ethiopian']['month'] == eth_month:  
+                all_holidays_for_month.append(holiday)  
+
+    muslim_holidays = [  
+        *({'key': 'moulid', **d} for d in _get_all_moulid_dates(eth_year)),  
+        *({'key': 'eidFitr', **d} for d in _get_all_eid_fitr_dates(eth_year)),  
+        *({'key': 'eidAdha', **d} for d in _get_all_eid_adha_dates(eth_year)),  
+    ]
+
+    for data in muslim_holidays:  
+        if data['ethiopian']['month'] == eth_month:  
+            info = HOLIDAY_INFO[data['key']]  
+            holiday_obj = {  
+                'key': data['key'],  
+                'tags': MOVABLE_HOLIDAYS[data['key']]['tags'],  
+                'movable': True,  
+                'name': info.get('name', {}).get(lang) or info.get('name', {}).get('english'),  
+                'description': info.get('description', {}).get(lang) or info.get('description', {}).get('english'),  
+                'ethiopian': data['ethiopian'],  
+                'gregorian': data['gregorian'],  
+            }
+            all_holidays_for_month.append(holiday_obj)  
+
+    filter_tags = filter_by if isinstance(filter_by, list) else ([filter_by] if filter_by else None)  
+    final_holidays = all_holidays_for_month  
+    if filter_tags:  
+        final_holidays = [h for h in all_holidays_for_month if any(tag in h['tags'] for tag in filter_tags)]  
+    
+    final_holidays.sort(key=lambda x: x['ethiopian']['day'])  
+    return final_holidays  
