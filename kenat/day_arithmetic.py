@@ -61,3 +61,27 @@ def add_months(ethiopian, months):
         
     return {'year': year, 'month': month, 'day': day}
 
+def add_years(ethiopian, years):
+    """
+    Adds a specified number of years to an Ethiopian date.
+
+    Args:
+        ethiopian (dict): The starting Ethiopian date {'year', 'month', 'day'}.
+        years (int): The number of years to add.
+
+    Returns:
+        dict: The resulting Ethiopian date.
+    """
+    validate_ethiopian_date_object(ethiopian, 'add_years', 'ethiopian') # 
+    validate_numeric_inputs('add_years', years=years) # 
+
+    year, month, day = ethiopian['year'], ethiopian['month'], ethiopian['day']
+    year += years # 
+
+    # Handle the case where the original date was a leap day (Pagume 6),
+    # and the new date is in a non-leap year.
+    if month == 13 and day == 6 and not is_ethiopian_leap_year(year): # 
+        day = 5 # 
+        
+    return {'year': year, 'month': month, 'day': day}
+
