@@ -1,5 +1,5 @@
 import pytest
-from kenat import get_bahire_hasab, get_movable_holiday
+from kenat.bahire_hasab import get_bahire_hasab, get_movable_holiday
 from kenat.exceptions import InvalidInputTypeError
 
 # By using a class, we can group all related tests, similar to `describe` in Jest.
