@@ -67,3 +67,13 @@ def get_weekday(eth_date):
     # The source new Date(...).getDay() is 0 for Sunday.
     return (g.isoweekday() % 7)
 
+def is_valid_ethiopian_date(year, month, day):
+    """
+    Checks if a given Ethiopian date is valid.
+    """
+    if not 1 <= month <= 13:
+        return False
+    if not 1 <= day <= get_ethiopian_days_in_month(year, month):
+        return False
+    return True
+
