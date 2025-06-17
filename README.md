@@ -1,6 +1,6 @@
-# Kenat_PY · ቀናት 🇪🇹
+# Kenat / ቀናት [![PyPI Version](https://img.shields.io/pypi/v/kenat)](https://pypi.org/project/kenat/)
 
-![banner](assets/img/py_banner.png)
+![banner](https://raw.githubusercontent.com/MelakuDemeke/kenat_py/master/assets/img/py_banner.png)
 
 ![GitHub issues](https://img.shields.io/github/issues/MelakuDemeke/kenat_py)
 ![GitHub Repo stars](https://img.shields.io/github/stars/MelakuDemeke/kenat_py?logo=github&style=flat)
@@ -39,7 +39,7 @@
 Install the library from source:
 
 ```bash
-pip install .
+pip install kenat
 ```
 
 For development/testing:
