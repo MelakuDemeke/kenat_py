@@ -107,4 +107,26 @@ class Kenat:
         """Returns the weekday number (0 for Sunday, 6 for Saturday)."""
         return utils.get_weekday(self._ethiopian)
 
+    # --- Formatting Methods ---
+    def format(self, options=None):
+        """
+        Formats the Ethiopian date according to the specified options.
+        Options is a dict: {'lang', 'show_weekday', 'use_geez', 'include_time'}
+        """
+        if options is None:
+            options = {}
+        lang = options.get('lang', 'amharic')
+        show_weekday = options.get('show_weekday', False)
+        use_geez = options.get('use_geez', False)
+        include_time = options.get('include_time', False)
+
+        if use_geez:
+             return formatting.format_in_geez_amharic(self._ethiopian)
+        if show_weekday:
+            return formatting.format_with_weekday(self._ethiopian, lang)
+        if include_time:
+            return formatting.format_with_time(self._ethiopian, self._time, lang)
+        
+        return formatting.format_standard(self._ethiopian, lang)
+
     
