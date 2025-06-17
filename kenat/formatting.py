@@ -28,3 +28,15 @@ def format_with_time(et_date, time_obj, lang='amharic'):
     time_string = time_obj.format(lang=lang, use_geez=False, zero_as_dash=False)  
     return f"{base} {time_string}" 
 
+def format_with_weekday(et_date, lang='amharic', use_geez=False):
+    """
+    Formats a date with the weekday name, month name, day, and year. 
+    Example: "ማክሰኞ, መስከረም 1 2016" 
+    """
+    weekday_index = get_weekday(et_date) 
+    weekday_name = DAYS_OF_WEEK.get(lang, DAYS_OF_WEEK['amharic'])[weekday_index] 
+    month_name = MONTH_NAMES.get(lang, MONTH_NAMES['amharic'])[et_date['month'] - 1] 
+    day = to_geez(et_date['day']) if use_geez else et_date['day'] 
+    year = to_geez(et_date['year']) if use_geez else et_date['year'] 
+
+    return f"{weekday_name}, {month_name} {day} {year}" 
