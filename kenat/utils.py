@@ -85,3 +85,20 @@ def get_gregorian_date_of_ethiopian_new_year(ethiopian_year):
     gregorian_year = ethiopian_year + 7 
     new_year_day = 12 if is_gregorian_leap_year(gregorian_year + 1) else 11
     return {'gregorianYear': gregorian_year, 'month': 9, 'day': new_year_day}
+
+def day_of_year(year, month, day):
+    """Calculates the day of the year for a given Gregorian date."""
+    month_lengths = [31, 29 if is_gregorian_leap_year(year) else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    doy = day
+    for i in range(month - 1):
+        doy += month_lengths[i]
+    return doy
+
+def month_day_from_day_of_year(year, day_of_year):
+    """Converts a day of year to a Gregorian month and day."""
+    month_lengths = [31, 29 if is_gregorian_leap_year(year) else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    month = 1
+    while day_of_year > month_lengths[month - 1]:
+        day_of_year -= month_lengths[month - 1]
+        month += 1
+    return {'month': month, 'day': day_of_year}
