@@ -132,3 +132,19 @@ def diff_in_months(date_a, date_b):
         
     return diff
 
+def diff_in_years(date_a, date_b):
+    """
+    Calculates the difference in years between two Ethiopian dates.
+    """
+    validate_ethiopian_date_object(date_a, 'diff_in_years', 'a') # 
+    validate_ethiopian_date_object(date_b, 'diff_in_years', 'b') # 
+    
+    diff = date_a['year'] - date_b['year']
+    
+    # If the month/day of 'a' is earlier in the year than 'b',
+    # a full year has not yet passed.
+    if date_a['month'] < date_b['month'] or \
+       (date_a['month'] == date_b['month'] and date_a['day'] < date_b['day']): # 
+        diff -= 1 # 
+        
+    return diff
