@@ -5,3 +5,4 @@ demo.py
 .pytest_cache
 kenat_ethiopian_calendar.egg-info
 dist
+publish.py
