@@ -103,16 +103,32 @@ def _jd_to_hijri(jd):
     year = 30 * n + j - 30
     return {'year': year, 'month': month, 'day': day}
 
-def hijri_to_gregorian(h_year, h_month, h_day):
+def hijri_to_gregorian(h_year, h_month, h_day, gregorian_year):
     """
-    Converts a Hijri date to a Gregorian date object using a pure Python algorithm.
-    This is an arithmetic conversion and may differ by a day from observational calendars.
+    Converts a Hijri date to a Gregorian date by searching within a given Gregorian year.
+    This mimics the brute-force search methodology of the original JavaScript code.
     """
-    try:
-        jd = _hijri_to_jd(h_year, h_month, h_day)
-        return _jd_to_gregorian(jd)
-    except (ValueError, TypeError):
-        raise KenatError(f"Invalid Hijri date provided: {h_year}-{h_month}-{h_day}")
+    # Start searching from the beginning of the previous Gregorian year to be safe.
+    base_date = datetime.date(gregorian_year - 1, 1, 1)
+
+    # Search for up to 730 days (2 years) to guarantee finding the date.
+    for offset in range(731):
+        test_date = base_date + datetime.timedelta(days=offset)
+
+        # For each day, find its corresponding Hijri date using our JDN functions.
+        jd = _gregorian_to_jd(test_date.year, test_date.month, test_date.day)
+        hijri_parts = _jd_to_hijri(jd)
+
+        # Check if we have a match for the target date within the target year.
+        if (
+            hijri_parts['year'] == h_year and
+            hijri_parts['month'] == h_month and
+            hijri_parts['day'] == h_day and
+            test_date.year == gregorian_year
+        ):
+            return test_date  # Found it!
+
+    return None
 
 def get_hijri_year(greg_date):
     """Gets the Hijri year from a Gregorian date object."""
