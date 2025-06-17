@@ -101,30 +101,70 @@ class Time:
         
         return cls(hour, minute, period) # 
 
-    def add(self, hours=0, minutes=0):
+    def add(self, duration):
         """
-        Adds a duration to the current time. 
-        Returns a new Time instance. 
+        Adds a duration to the current time.
+        Returns a new Time instance.
         """
-        validate_numeric_inputs('Time.add', hours=hours, minutes=minutes) # 
+        if not isinstance(duration, dict):
+            raise InvalidTimeError('Duration must be an object.')
+        hours = duration.get('hours', 0)
+        minutes = duration.get('minutes', 0)
+        validate_numeric_inputs('Time.add', hours=hours, minutes=minutes)
         
         greg = self.to_gregorian()
-        total_minutes = greg['hour'] * 60 + greg['minute'] + hours * 60 + minutes # 
-        # Normalize to a 24-hour cycle (1440 minutes)
-        total_minutes = total_minutes % 1440 # 
+        total_minutes = (greg['hour'] * 60 + greg['minute'] + hours * 60 + minutes) % 1440
 
-        new_hour = total_minutes // 60 # 
-        new_minute = total_minutes % 60 # 
-
-        return Time.from_gregorian(new_hour, new_minute) # 
+        return Time.from_gregorian(total_minutes // 60, total_minutes % 60)
     
-    def format(self, lang='amharic', use_geez=False, show_period=True, zero_as_dash=True):
+    def subtract(self, duration):
         """
-        Formats the time as a string.
+        Subtracts a duration from the current time.
+        Returns a new Time instance.
         """
-        hour_str = to_geez(self.hour) if use_geez else f"{self.hour:02d}"
-        minute_str = ''
+        if not isinstance(duration, dict):
+            raise InvalidTimeError('Duration must be an object.')
+        hours = duration.get('hours', 0)
+        minutes = duration.get('minutes', 0)
+        # Subtracting is the same as adding a negative duration
+        return self.add({'hours': -hours, 'minutes': -minutes})
 
+    def diff(self, other_time):
+        """
+        Calculates the shortest difference in hours and minutes between two times.
+        """
+        if not isinstance(other_time, Time):
+            raise InvalidTimeError('Can only compare with another Time instance.')
+        
+        t1 = self.to_gregorian()
+        t2 = other_time.to_gregorian()
+        
+        total_minutes1 = t1['hour'] * 60 + t1['minute']
+        total_minutes2 = t2['hour'] * 60 + t2['minute']
+        
+        diff = abs(total_minutes1 - total_minutes2)
+        
+        # The shortest path around a 24h clock
+        if diff > 720: # 720 minutes = 12 hours
+            diff = 1440 - diff
+            
+        return {'hours': diff // 60, 'minutes': diff % 60}
+    
+    def format(self, lang=None, use_geez=None, show_period=True, zero_as_dash=True):
+        """Formats the time as a string."""
+        # Set intelligent defaults if arguments are not provided
+        if use_geez is None:
+            use_geez = True
+        
+        if lang is None:
+            # If use_geez is false, the language should default to English
+            lang = 'amharic' if use_geez else 'english'
+
+        # --- The rest of the logic works with the corrected defaults ---
+
+        hour_str = to_geez(self.hour) if use_geez else f"{self.hour:02d}"
+        
+        minute_str = ''
         if zero_as_dash and self.minute == 0:
             minute_str = '_'
         else:
@@ -135,7 +175,6 @@ class Time:
             if lang == 'english':
                 period_label = f" {self.period}"
             else:
-                # Use PERIOD_LABELS from constants for Amharic
                 from .constants import PERIOD_LABELS
                 period_label = f" {PERIOD_LABELS.get(self.period, '')}"
 
@@ -146,3 +185,12 @@ class Time:
 
     def __str__(self):
         return self.format(lang='english', use_geez=False)
+    
+    def __eq__(self, other):
+        """Checks if two Time objects are equal."""
+        if not isinstance(other, Time):
+            return NotImplemented
+        return (self.hour == other.hour and
+                self.minute == other.minute and
+                self.period == other.period)
+

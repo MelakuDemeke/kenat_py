@@ -202,6 +202,11 @@ class Kenat:
             month_grid = MonthGrid.create(year=year, month=month, **options)
             full_year.append(month_grid)
         return full_year
+    
+    def get_current_time(self):
+        """Returns a Time object representing the current Ethiopian time."""
+        now = datetime.datetime.now()
+        return Time.from_gregorian(now.hour, now.minute)
 
     def get_month_calendar(self, year=None, month=None, use_geez=False):
         """
