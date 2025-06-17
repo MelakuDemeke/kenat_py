@@ -98,8 +98,10 @@ def get_bahire_hasab(ethiopian_year, lang='amharic'):
 
     return {  
         'ameteAlem': base['amete_alem'],
+        'meteneRabiet': base['metene_rabiet'],
         'evangelist': {'name': evangelist_name, 'remainder': evangelist_remainder},
         'newYear': {'dayName': new_year_weekday, 'tinteQemer': tinte_qemer},
+        'medeb': base['medeb'],
         'wenber': base['wenber'],
         'abektie': base['abektie'],
         'metqi': base['metqi'],
