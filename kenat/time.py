@@ -118,21 +118,28 @@ class Time:
 
         return Time.from_gregorian(new_hour, new_minute) # 
     
-    def format(self, lang='amharic', use_geez=True, show_period=True):
+    def format(self, lang='amharic', use_geez=False, show_period=True, zero_as_dash=True):
         """
-        Formats the time as a string. 
+        Formats the time as a string.
         """
-        hour_str = to_geez(self.hour) if use_geez else f"{self.hour:02d}" # 
-        minute_str = to_geez(self.minute) if use_geez else f"{self.minute:02d}" # 
+        hour_str = to_geez(self.hour) if use_geez else f"{self.hour:02d}"
+        minute_str = ''
+
+        if zero_as_dash and self.minute == 0:
+            minute_str = '_'
+        else:
+            minute_str = to_geez(self.minute) if use_geez else f"{self.minute:02d}"
 
         period_label = ''
-        if show_period: # 
-            if lang == 'english': # 
-                period_label = f" {self.period}" # 
+        if show_period:
+            if lang == 'english':
+                period_label = f" {self.period}"
             else:
-                period_label = f" {PERIOD_LABELS.get(self.period, '')}" # 
+                # Use PERIOD_LABELS from constants for Amharic
+                from .constants import PERIOD_LABELS
+                period_label = f" {PERIOD_LABELS.get(self.period, '')}"
 
-        return f"{hour_str}:{minute_str}{period_label}" # 
+        return f"{hour_str}:{minute_str}{period_label}"
         
     def __repr__(self):
         return f"Time(hour={self.hour}, minute={self.minute}, period='{self.period}')"
