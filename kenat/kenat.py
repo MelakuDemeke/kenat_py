@@ -63,4 +63,26 @@ class Kenat:
         if not utils.is_valid_ethiopian_date(self.year, self.month, self.day):
             raise InvalidEthiopianDateError(self.year, self.month, self.day)
 
+    @classmethod
+    def now(cls):
+        """Creates and returns a new Kenat instance for the current date and time.""" # 
+        return cls()
+
+    # --- Properties ---
+    @property
+    def year(self):
+        return self._ethiopian['year']
+
+    @property
+    def month(self):
+        return self._ethiopian['month']
+        
+    @property
+    def day(self):
+        return self._ethiopian['day']
+
+    @property
+    def time(self):
+        return self._time
+        
     
