@@ -122,3 +122,40 @@ def get_holidays_in_month(eth_year, eth_month, lang='amharic', filter_by=None):
     
     final_holidays.sort(key=lambda x: x['ethiopian']['day'])  
     return final_holidays  
+
+def get_holidays_for_year(eth_year, lang='amharic', filter_by=None):
+    """Gets all holidays for a given Ethiopian year. """
+    validate_numeric_inputs('get_holidays_for_year', eth_year=eth_year)  
+    all_holidays_for_year = []  
+
+    single_occurrence_keys = list(FIXED_HOLIDAYS.keys()) + list(KEY_TO_TEWSAK_MAP.keys())  
+    for key in single_occurrence_keys:  
+        holiday = get_holiday(key, eth_year, lang)  
+        if holiday:  
+            all_holidays_for_year.append(holiday)  
+    
+    def add_muslim_holidays(key, date_array):  
+        for data in date_array:  
+            info = HOLIDAY_INFO[key]  
+            all_holidays_for_year.append({  
+                'key': key,  
+                'tags': MOVABLE_HOLIDAYS[key]['tags'],  
+                'movable': True,  
+                'name': info.get('name', {}).get(lang) or info.get('name', {}).get('english'),  
+                'description': info.get('description', {}).get(lang) or info.get('description', {}).get('english'),  
+                'ethiopian': data['ethiopian'],  
+                'gregorian': data['gregorian'],  
+            })
+
+    add_muslim_holidays('moulid', _get_all_moulid_dates(eth_year))  
+    add_muslim_holidays('eidFitr', _get_all_eid_fitr_dates(eth_year))  
+    add_muslim_holidays('eidAdha', _get_all_eid_adha_dates(eth_year))  
+
+    filter_tags = filter_by if isinstance(filter_by, list) else ([filter_by] if filter_by else None)  
+    final_holidays = all_holidays_for_year  
+    if filter_tags:  
+        final_holidays = [h for h in all_holidays_for_year if any(tag in h['tags'] for tag in filter_tags)]  
+        
+    final_holidays.sort(key=lambda x: (x['ethiopian']['month'], x['ethiopian']['day']))  
+    return final_holidays 
+
