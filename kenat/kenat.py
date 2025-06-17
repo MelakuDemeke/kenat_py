@@ -127,6 +127,51 @@ class Kenat:
             return formatting.format_with_time(self._ethiopian, self._time, lang)
         
         return formatting.format_standard(self._ethiopian, lang)
+    
+    def get_ethiopian(self):
+        """Returns the Ethiopian date as a dictionary."""
+        return self._ethiopian
+
+    def get_gregorian(self):
+        """Returns the Gregorian date as a dictionary, for test compatibility."""
+        greg_date = self.to_gregorian_date()
+        return {'year': greg_date.year, 'month': greg_date.month, 'day': greg_date.day}
+
+    def to_string(self):
+        """Returns a specific string format matching the original JS toString()."""
+        # This format includes the default time.
+        return formatting.format_with_time(self._ethiopian, self._time)
+        
+    def format_in_geez_amharic(self):
+        """Formats the date with Amharic month and Geez numerals."""
+        return formatting.format_in_geez_amharic(self._ethiopian)
+
+    def is_before(self, other):
+        """Checks if this date is before another Kenat instance."""
+        if not isinstance(other, Kenat):
+            raise TypeError("Can only compare with another Kenat instance.")
+        return self.diff_in_days(other) < 0
+
+    def is_after(self, other):
+        """Checks if this date is after another Kenat instance."""
+        if not isinstance(other, Kenat):
+            raise TypeError("Can only compare with another Kenat instance.")
+        return self.diff_in_days(other) > 0
+
+    def is_same_day(self, other):
+        """Checks if this date is the same as another Kenat instance."""
+        if not isinstance(other, Kenat):
+            return False
+        return self.diff_in_days(other) == 0
+
+    def start_of_month(self):
+        """Returns a new Kenat instance set to the first day of the current month."""
+        return Kenat(year=self.year, month=self.month, day=1)
+
+    def end_of_month(self):
+        """Returns a new Kenat instance set to the last day of the current month."""
+        last_day = utils.get_ethiopian_days_in_month(self.year, self.month)
+        return Kenat(year=self.year, month=self.month, day=last_day)
 
     # --- Arithmetic Methods ---
     def add(self, years=0, months=0, days=0):
