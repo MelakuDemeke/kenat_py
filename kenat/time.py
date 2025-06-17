@@ -101,4 +101,21 @@ class Time:
         
         return cls(hour, minute, period) # 
 
+    def add(self, hours=0, minutes=0):
+        """
+        Adds a duration to the current time. 
+        Returns a new Time instance. 
+        """
+        validate_numeric_inputs('Time.add', hours=hours, minutes=minutes) # 
+        
+        greg = self.to_gregorian()
+        total_minutes = greg['hour'] * 60 + greg['minute'] + hours * 60 + minutes # 
+        # Normalize to a 24-hour cycle (1440 minutes)
+        total_minutes = total_minutes % 1440 # 
+
+        new_hour = total_minutes // 60 # 
+        new_minute = total_minutes % 60 # 
+
+        return Time.from_gregorian(new_hour, new_minute) # 
+    
     
