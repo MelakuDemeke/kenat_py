@@ -40,3 +40,44 @@ _get_all_moulid_dates = lambda year: _find_all_islamic_occurrences(year, 3, 12)
 _get_all_eid_fitr_dates = lambda year: _find_all_islamic_occurrences(year, 10, 1)  
 _get_all_eid_adha_dates = lambda year: _find_all_islamic_occurrences(year, 12, 10)  
 
+def get_holiday(holiday_key, eth_year, lang='amharic'):
+    """Gets details for a single holiday for a given year. """
+    validate_numeric_inputs('get_holiday', eth_year=eth_year)  
+    info = HOLIDAY_INFO.get(holiday_key)  
+    if not info:  
+        return None  
+        
+    name = info.get('name', {}).get(lang) or info.get('name', {}).get('english')  
+    description = info.get('description', {}).get(lang) or info.get('description', {}).get('english')  
+
+    if holiday_key in FIXED_HOLIDAYS:  
+        rules = FIXED_HOLIDAYS[holiday_key]  
+        return {  
+            'key': holiday_key, 'tags': rules.get('tags', []), 'movable': False,  
+            'name': name, 'description': description,  
+            'ethiopian': {'year': eth_year, 'month': rules['month'], 'day': rules['day']}  
+        }
+
+    tewsak_key = KEY_TO_TEWSAK_MAP.get(holiday_key)  
+    if tewsak_key:  
+        date = bahire_hasab.get_movable_holiday(tewsak_key, eth_year)  
+        gregorian = conversions.to_gc(date['year'], date['month'], date['day'])  
+        return {  
+            'key': holiday_key, 'tags': MOVABLE_HOLIDAYS.get(holiday_key, {}).get('tags', []), 'movable': True,  
+            'name': name, 'description': description, 'ethiopian': date, 'gregorian': gregorian  
+        }
+
+    muslim_date_data = None  
+    if holiday_key == 'eidFitr': muslim_date_data = _get_all_eid_fitr_dates(eth_year)  
+    elif holiday_key == 'eidAdha': muslim_date_data = _get_all_eid_adha_dates(eth_year)  
+    elif holiday_key == 'moulid': muslim_date_data = _get_all_moulid_dates(eth_year)  
+    
+    if muslim_date_data:  
+        data = muslim_date_data[0]  
+        return {  
+            'key': holiday_key, 'tags': MOVABLE_HOLIDAYS.get(holiday_key, {}).get('tags', []), 'movable': True,  
+            'name': name, 'description': description, 'ethiopian': data['ethiopian'], 'gregorian': data['gregorian']  
+        }
+    
+    return None  
+
