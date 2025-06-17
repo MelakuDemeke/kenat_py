@@ -119,3 +119,7 @@ def hijri_to_gregorian(h_year, h_month, h_day):
     except (ValueError, TypeError):
         raise KenatError(f"Invalid Hijri date provided: {h_year}-{h_month}-{h_day}")
 
+def get_hijri_year(greg_date):
+    """Gets the Hijri year from a Gregorian date object."""
+    jd = _gregorian_to_jd(greg_date.year, greg_date.month, greg_date.day)
+    return _jd_to_hijri(jd)['year']
