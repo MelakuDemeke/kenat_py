@@ -77,3 +77,11 @@ def is_valid_ethiopian_date(year, month, day):
         return False
     return True
 
+def get_gregorian_date_of_ethiopian_new_year(ethiopian_year):
+    """
+    Returns the Gregorian date of the Ethiopian New Year for the given Ethiopian year.
+    """
+    validate_numeric_inputs('get_gregorian_date_of_ethiopian_new_year', ethiopianYear=ethiopian_year)
+    gregorian_year = ethiopian_year + 7 
+    new_year_day = 12 if is_gregorian_leap_year(gregorian_year + 1) else 11
+    return {'gregorianYear': gregorian_year, 'month': 9, 'day': new_year_day}
