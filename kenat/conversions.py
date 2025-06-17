@@ -96,3 +96,15 @@ def _hijri_to_jd(year, month, day):
     """Converts a Hijri date to Julian Day Number."""
     return (11 * year + 3) // 30 + 354 * year + 30 * month - (month - 1) // 2 + day + 1948440 - 385
 
+def _jd_to_hijri(jd):
+    """Converts a Julian Day Number to a Hijri date."""
+    jd = jd - 1948440 + 10632
+    n = (jd - 1) // 10631
+    jd = jd - 10631 * n + 354
+    j = ((10985 - jd) // 5316) * ((50 * jd) // 17719) + ((jd - 5316) // 5316) * ((43 * jd) // 15238)
+    jd = jd - ((30 - j) // 15) * ((17719 * j) // 50) - (j // 16) * ((15238 * j) // 43) + 29
+    month = (24 * jd) // 709
+    day = jd - (709 * month) // 24
+    year = 30 * n + j - 30
+    return {'year': year, 'month': month, 'day': day}
+
