@@ -1,4 +1,5 @@
 import datetime
+from .geez_converter import to_geez
 from . import (
     conversions,
     holidays,
@@ -205,25 +206,47 @@ class Kenat:
     def get_month_calendar(self, year=None, month=None, use_geez=False):
         """
         Generates a simple calendar for a given month, mapping each Ethiopian day
-        to its Gregorian equivalent.
+        to its Gregorian equivalent, including display strings.
         """
+        # These local imports are fine.
+        from .constants import MONTH_NAMES
+        from .geez_converter import to_geez
+        from . import utils, conversions
+
         year = year or self.year
         month = month or self.month
         days_in_month = utils.get_ethiopian_days_in_month(year, month)
         calendar = []
+
         for day in range(1, days_in_month + 1):
             eth_date = {'year': year, 'month': month, 'day': day}
-            greg_date = conversions.to_gc(year, month, day)
+            greg_date = conversions.to_gc(year, month, day) # This returns a datetime.date object
+
+            ethiopian_display = ""
+            if use_geez:
+                ethiopian_display = f"{MONTH_NAMES['amharic'][month - 1]} {to_geez(day)} {to_geez(year)}"
+            else:
+                ethiopian_display = f"{MONTH_NAMES['amharic'][month - 1]} {day} {year}"
+
+            # --- THIS IS THE FIX ---
+            # Use dot notation (.year, .month, .day) for the datetime.date object
+            gregorian_display = f"{greg_date.year}-{str(greg_date.month).zfill(2)}-{str(greg_date.day).zfill(2)}"
+
+            eth_date['display'] = ethiopian_display
+            
+            # We need to create the greg_date dict for the return value
+            greg_date_dict = {
+                'year': greg_date.year,
+                'month': greg_date.month,
+                'day': greg_date.day,
+                'display': gregorian_display
+            }
+            
             calendar.append({
                 'ethiopian': eth_date,
-                'gregorian': {
-                    'year': greg_date.year,
-                    'month': greg_date.month,
-                    'day': greg_date.day
-                }
+                'gregorian': greg_date_dict,
             })
         return calendar
-
 
     # --- Python Special Methods ---
     def __str__(self):
