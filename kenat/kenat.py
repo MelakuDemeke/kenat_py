@@ -129,4 +129,20 @@ class Kenat:
         
         return formatting.format_standard(self._ethiopian, lang)
 
+    # --- Arithmetic Methods ---
+    def add(self, years=0, months=0, days=0):
+        """Returns a new Kenat instance with the added duration."""
+        new_date = self._ethiopian
+        if years:
+            new_date = day_arithmetic.add_years(new_date, years)
+        if months:
+            new_date = day_arithmetic.add_months(new_date, months)
+        if days:
+            new_date = day_arithmetic.add_days(new_date, days)
+        return Kenat(year=new_date)
+
+    def diff_in_days(self, other):
+        """Calculates the difference in days between this and another Kenat instance."""
+        return day_arithmetic.diff_in_days(self._ethiopian, other._ethiopian) 
+
     
