@@ -18,3 +18,13 @@ def format_in_geez_amharic(et_date):
     """
     month_name = MONTH_NAMES['amharic'][et_date['month'] - 1] 
     return f"{month_name} {to_geez(et_date['day'])} {to_geez(et_date['year'])}" 
+
+def format_with_time(et_date, time_obj, lang='amharic'):
+    """
+    Formats an Ethiopian date and time as a string.
+    Example: "መስከረም 10 2016 08:30 ጠዋት" 
+    """
+    base = format_standard(et_date, lang)
+    time_string = time_obj.format(lang=lang, use_geez=False, zero_as_dash=False)  
+    return f"{base} {time_string}" 
+
