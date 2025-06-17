@@ -36,3 +36,7 @@ def _find_all_islamic_occurrences(ethiopian_year, hijri_month, hijri_day):
             
     return list({json.dumps(item['ethiopian']): item for item in occurrences}.values())  
 
+_get_all_moulid_dates = lambda year: _find_all_islamic_occurrences(year, 3, 12)  
+_get_all_eid_fitr_dates = lambda year: _find_all_islamic_occurrences(year, 10, 1)  
+_get_all_eid_adha_dates = lambda year: _find_all_islamic_occurrences(year, 12, 10)  
+
