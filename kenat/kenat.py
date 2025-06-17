@@ -65,7 +65,7 @@ class Kenat:
 
     @classmethod
     def now(cls):
-        """Creates and returns a new Kenat instance for the current date and time.""" # 
+        """Creates and returns a new Kenat instance for the current date and time."""
         return cls()
 
     # --- Properties ---
@@ -85,4 +85,26 @@ class Kenat:
     def time(self):
         return self._time
         
+    def to_gregorian_date(self):
+        """Returns the Gregorian date as a Python datetime.date object."""
+        return conversions.to_gc(self.year, self.month, self.day)
+
+    # --- Information Methods ---
+    def get_bahire_hasab(self, lang='amharic'):
+        """Calculates and returns the Bahire Hasab values for the current instance's year."""
+        return bahire_hasab.get_bahire_hasab(self.year, lang)
+
+    def is_holiday(self, lang='amharic'):
+        """Checks if the current date is a holiday and returns a list of holiday objects if it is."""
+        holidays_in_month = holidays.get_holidays_in_month(self.year, self.month, lang) 
+        return [h for h in holidays_in_month if h['ethiopian']['day'] == self.day]
+
+    def is_leap_year(self):
+        """Checks if the current Ethiopian year is a leap year."""
+        return utils.is_ethiopian_leap_year(self.year)
+
+    def weekday(self):
+        """Returns the weekday number (0 for Sunday, 6 for Saturday)."""
+        return utils.get_weekday(self._ethiopian)
+
     
