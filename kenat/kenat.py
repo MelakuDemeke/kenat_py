@@ -145,4 +145,41 @@ class Kenat:
         """Calculates the difference in days between this and another Kenat instance."""
         return day_arithmetic.diff_in_days(self._ethiopian, other._ethiopian) 
 
-    
+    # --- Calendar Grid Generation ---
+    @staticmethod
+    def get_year_calendar(year, options=None):
+        """Generates a full-year calendar as a list of month objects.""" 
+        if options is None: options = {}
+        full_year = []
+        for month in range(1, 14):
+            # Create a MonthGrid for each month and append its data
+            month_grid = MonthGrid.create(year=year, month=month, **options)
+            full_year.append(month_grid)
+        return full_year
+
+    # --- Python Special Methods ---
+    def __str__(self):
+        """Returns a user-friendly string representation."""
+        return self.format({'lang': 'english'})
+
+    def __repr__(self):
+        """Returns an unambiguous string representation of the object."""
+        return f"Kenat(year={self.year}, month={self.month}, day={self.day})"
+
+    def __eq__(self, other):
+        """Checks for date equality."""
+        if not isinstance(other, Kenat):
+            return NotImplemented
+        return self._ethiopian == other._ethiopian
+
+    def __lt__(self, other):
+        """Checks if this date is before another."""
+        if not isinstance(other, Kenat):
+            return NotImplemented
+        return self.diff_in_days(other) < 0
+
+    def __gt__(self, other):
+        """Checks if this date is after another."""
+        if not isinstance(other, Kenat):
+            return NotImplemented
+        return self.diff_in_days(other) > 0
