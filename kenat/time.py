@@ -48,4 +48,20 @@ class Time:
 
         return cls(eth_hour, minute, period) # 
 
+    def to_gregorian(self):
+        """
+        Converts the Ethiopian time to Gregorian 24-hour format. 
+        """
+        # Convert Ethiopian 1-12 hour to a 0-11 offset, with 12 o'clock as 0.
+        greg_hour = self.hour % 12 # 
+        
+        if self.period == 'day': # 
+            greg_hour += 6 # 
+        else:  # 'night'
+            greg_hour += 18 # 
+
+        # Handle the 24-hour wrap-around
+        greg_hour %= 24 # 
+        return {'hour': greg_hour, 'minute': self.minute} # 
+
     
