@@ -1,3 +1,4 @@
 demo.py
 */__pycache__
 .venv
+/kenat.egg-info
