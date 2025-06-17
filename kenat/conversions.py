@@ -35,4 +35,39 @@ def to_gc(eth_year, eth_month, eth_day):
     
     return new_year_date + datetime.timedelta(days=days_to_add)
 
+def to_ec(greg_year, greg_month, greg_day):
+    """
+    Converts a Gregorian date to the Ethiopian calendar (EC) date. 
+
+    Args:
+        greg_year (int): The Gregorian year.
+        greg_month (int): The Gregorian month (1-12).
+        greg_day (int): The Gregorian day.
+
+    Returns:
+        dict: A dictionary {'year', 'month', 'day'} for the Ethiopian date.
+    """
+    # 1. Validate input types and date validity 
+    validate_numeric_inputs('to_ec', g_year=greg_year, g_month=greg_month, g_day=greg_day)
+    try:
+        greg_date = datetime.date(greg_year, greg_month, greg_day)
+    except ValueError:
+        raise InvalidGregorianDateError(greg_year, greg_month, greg_day)
+
+    # 2. Determine the corresponding Ethiopian year
+    # The Ethiopian year starts roughly 7-8 years before the Gregorian year.
+    eth_year = greg_year - 8
+    greg_of_eth_new_year = to_gc(eth_year + 1, 1, 1)
+    if greg_date >= greg_of_eth_new_year:
+        eth_year += 1
+
+    # 3. Calculate the difference in days from that Ethiopian New Year
+    new_year_greg_date = to_gc(eth_year, 1, 1)
+    days_diff = (greg_date - new_year_greg_date).days
+    
+    # 4. Convert the day difference into Ethiopian month and day
+    eth_month = (days_diff // 30) + 1
+    eth_day = (days_diff % 30) + 1
+    
+    return {'year': eth_year, 'month': eth_month, 'day': eth_day}
 
