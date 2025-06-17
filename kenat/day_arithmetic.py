@@ -85,3 +85,32 @@ def add_years(ethiopian, years):
         
     return {'year': year, 'month': month, 'day': day}
 
+def diff_in_days(date_a, date_b):
+    """
+    Calculates the difference in days between two Ethiopian dates.
+
+    Args:
+        date_a (dict): The first Ethiopian date.
+        date_b (dict): The second Ethiopian date.
+
+    Returns:
+        int: The difference in days.
+    """
+    validate_ethiopian_date_object(date_a, 'diff_in_days', 'a') # 
+    validate_ethiopian_date_object(date_b, 'diff_in_days', 'b') # 
+
+    def total_days(eth_date): # 
+        """Helper to count days from a fixed epoch (year 1, month 1, day 1)."""
+        days = 0
+        # Add days from full years
+        for y in range(1, eth_date['year']): # 
+            days += 366 if is_ethiopian_leap_year(y) else 365 # 
+        # Add days from full months in the current year
+        for m in range(1, eth_date['month']): # 
+            days += get_ethiopian_days_in_month(eth_date['year'], m)
+        # Add days in the current month
+        days += eth_date['day'] # 
+        return days
+
+    return total_days(date_a) - total_days(date_b) # 
+
