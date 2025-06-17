@@ -31,3 +31,12 @@ def validate_ethiopian_date_object(date_obj, func_name, param_name):
         }
     )
 
+# --- Date Property Helpers ---
+
+def is_gregorian_leap_year(year):
+    """
+    Checks if the given Gregorian year is a leap year.
+    Leap years occur every 4 years, except for centuries not divisible by 400.
+    """
+    return (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
+
