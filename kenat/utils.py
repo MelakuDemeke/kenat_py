@@ -40,3 +40,10 @@ def is_gregorian_leap_year(year):
     """
     return (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
 
+def is_ethiopian_leap_year(year):
+    """
+    Checks if the given Ethiopian year is a leap year.
+    Ethiopian leap years happen when the year modulo 4 equals 3.
+    """
+    return year % 4 == 3
+
