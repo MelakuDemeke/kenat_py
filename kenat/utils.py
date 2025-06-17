@@ -55,3 +55,15 @@ def get_ethiopian_days_in_month(year, month):
         return 6 if is_ethiopian_leap_year(year) else 5
     return 30
 
+def get_weekday(eth_date):
+    """
+    Returns the weekday (0=Sunday, 6=Saturday) for a given Ethiopian date.
+    """
+    # Import locally to prevent circular dependency with the 'conversions' module
+    from . import conversions
+    g = conversions.to_gc(eth_date['year'], eth_date['month'], eth_date['day'])
+    # The getDay() method in JS returns 0 for Sunday, which matches Python's isoweekday() % 7 behavior.
+    # Python's weekday() is 0 for Monday. JS getDay() is 0 for Sunday.
+    # The source new Date(...).getDay() is 0 for Sunday.
+    return (g.isoweekday() % 7)
+
