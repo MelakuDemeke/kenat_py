@@ -78,3 +78,17 @@ def _gregorian_to_jd(year, month, day):
     m = month + 12 * a - 3
     return day + ((153 * m + 2) // 5) + 365 * y + (y // 4) - (y // 100) + (y // 400) - 32045
 
+def _jd_to_gregorian(jd):
+    """Converts a Julian Day Number to a Gregorian date."""
+    L = jd + 68569
+    N = (4 * L) // 146097
+    L = L - (146097 * N + 3) // 4
+    I = (4000 * (L + 1)) // 1461001
+    L = L - (1461 * I) // 4 + 31
+    J = (80 * L) // 2447
+    day = L - (2447 * J) // 80
+    L = J // 11
+    month = J + 2 - 12 * L
+    year = 100 * (N - 49) + I + L
+    return datetime.date(year, month, day)
+
