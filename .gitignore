@@ -3,3 +3,5 @@ demo.py
 .venv
 /kenat.egg-info
 .pytest_cache
+kenat_ethiopian_calendar.egg-info
+dist

@@ -35,3 +35,7 @@ test = [
     "pytest",
     "pytest-mock",
 ]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["kenat"]
