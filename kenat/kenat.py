@@ -157,6 +157,29 @@ class Kenat:
             full_year.append(month_grid)
         return full_year
 
+    def get_month_calendar(self, year=None, month=None, use_geez=False):
+        """
+        Generates a simple calendar for a given month, mapping each Ethiopian day
+        to its Gregorian equivalent.
+        """
+        year = year or self.year
+        month = month or self.month
+        days_in_month = utils.get_ethiopian_days_in_month(year, month)
+        calendar = []
+        for day in range(1, days_in_month + 1):
+            eth_date = {'year': year, 'month': month, 'day': day}
+            greg_date = conversions.to_gc(year, month, day)
+            calendar.append({
+                'ethiopian': eth_date,
+                'gregorian': {
+                    'year': greg_date.year,
+                    'month': greg_date.month,
+                    'day': greg_date.day
+                }
+            })
+        return calendar
+
+
     # --- Python Special Methods ---
     def __str__(self):
         """Returns a user-friendly string representation."""
