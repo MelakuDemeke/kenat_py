@@ -172,11 +172,3 @@ GitHub: [@melakud](https://github.com/melakud)
 ## 📄 License
 
 **MIT License** — see [LICENSE](./LICENSE) for details.
-
----
-
-Let me know if you want to:
-
-* add badges (PyPI, license, tests)
-* include an animated GIF demo (e.g. calendar grid or console output)
-* or generate this as a `README.md` file automatically.
