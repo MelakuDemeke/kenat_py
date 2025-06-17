@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "kenat-ethiopian-calendar"
+name = "kenat"
 version = "1.0.0"
 authors = [
   { name="Melaku Demeke", email="melaku.demeke789@gmail.com" },
