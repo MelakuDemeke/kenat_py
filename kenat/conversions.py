@@ -92,3 +92,7 @@ def _jd_to_gregorian(jd):
     year = 100 * (N - 49) + I + L
     return datetime.date(year, month, day)
 
+def _hijri_to_jd(year, month, day):
+    """Converts a Hijri date to Julian Day Number."""
+    return (11 * year + 3) // 30 + 354 * year + 30 * month - (month - 1) // 2 + day + 1948440 - 385
+
