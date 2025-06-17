@@ -40,3 +40,14 @@ def format_with_weekday(et_date, lang='amharic', use_geez=False):
     year = to_geez(et_date['year']) if use_geez else et_date['year'] 
 
     return f"{weekday_name}, {month_name} {day} {year}" 
+
+def format_short(et_date):
+    """
+    Returns Ethiopian date in short "yyyy/mm/dd" format. 
+    Example: "2017/10/25"
+    """
+    y = et_date['year'] 
+    m = str(et_date['month']).zfill(2) 
+    d = str(et_date['day']).zfill(2) 
+    return f"{y}/{m}/{d}" 
+
