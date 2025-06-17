@@ -11,3 +11,10 @@ def format_standard(et_date, lang='amharic'):
     month_name = names[et_date['month'] - 1] 
     return f"{month_name} {et_date['day']} {et_date['year']}" 
 
+def format_in_geez_amharic(et_date):
+    """
+    Formats an Ethiopian date in Geez numerals with Amharic month name.
+    Example: "መስከረም ፲፩ ፳፻፲፮" 
+    """
+    month_name = MONTH_NAMES['amharic'][et_date['month'] - 1] 
+    return f"{month_name} {to_geez(et_date['day'])} {to_geez(et_date['year'])}" 
