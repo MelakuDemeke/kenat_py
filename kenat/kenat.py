@@ -8,7 +8,7 @@ from . import (
     utils
 )
 from .time import Time
-# from .month_grid import MonthGrid
+from .month_grid import MonthGrid
 from .exceptions import UnrecognizedInputError, InvalidDateFormatError, InvalidEthiopianDateError
 
 class Kenat:
