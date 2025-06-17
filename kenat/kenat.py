@@ -8,7 +8,6 @@ from . import (
     utils
 )
 from .time import Time
-from .month_grid import MonthGrid
 from .exceptions import UnrecognizedInputError, InvalidDateFormatError, InvalidEthiopianDateError
 
 class Kenat:
@@ -148,6 +147,7 @@ class Kenat:
     # --- Calendar Grid Generation ---
     @staticmethod
     def get_year_calendar(year, options=None):
+        from .month_grid import MonthGrid
         """Generates a full-year calendar as a list of month objects.""" 
         if options is None: options = {}
         full_year = []

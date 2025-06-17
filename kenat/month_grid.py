@@ -1,4 +1,3 @@
-from .kenat import Kenat
 from . import holidays
 from .geez_converter import to_geez
 from .constants import DAYS_OF_WEEK, MONTH_NAMES
@@ -7,6 +6,7 @@ from .exceptions import InvalidGridConfigError
 
 class MonthGrid:
     def __init__(self, config=None):
+        from .kenat import Kenat
         if config is None:
             config = {}
         self._validate_config(config)
