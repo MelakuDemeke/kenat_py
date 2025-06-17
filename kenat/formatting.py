@@ -51,3 +51,17 @@ def format_short(et_date):
     d = str(et_date['day']).zfill(2) 
     return f"{y}/{m}/{d}" 
 
+def to_iso_date_string(et_date, time_obj=None):
+    """
+    Returns an ISO-like string: "YYYY-MM-DD" or "YYYY-MM-DDTHH:mm". 
+    """
+    y = et_date['year'] 
+    m = str(et_date['month']).zfill(2) 
+    d = str(et_date['day']).zfill(2) 
+
+    if not time_obj: 
+        return f"{y}-{m}-{d}" 
+
+    hr = str(time_obj.hour).zfill(2) 
+    minute = str(time_obj.minute).zfill(2) 
+    return f"{y}-{m}-{d}T{hr}:{minute}" 
