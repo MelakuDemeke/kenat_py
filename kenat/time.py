@@ -64,4 +64,41 @@ class Time:
         greg_hour %= 24 # 
         return {'hour': greg_hour, 'minute': self.minute} # 
 
+    @classmethod
+    def from_string(cls, time_string):
+        """
+        Creates a Time object from a string representation (e.g., "6:30 night", "፮:፴ ማታ"). 
+        """
+        if not isinstance(time_string, str) or not time_string.strip(): # 
+            raise InvalidTimeError("Input must be a non-empty string.") # 
+        if ':' not in time_string: # 
+            raise InvalidTimeError(f"Invalid time string: \"{time_string}\". Must include a ':' separator.") # 
+
+        def parse_number(s):
+            try:
+                return int(s)
+            except ValueError:
+                try:
+                    return to_arabic(s) # 
+                except Exception:
+                    return float('nan') # 
+        
+        parts = time_string.replace(':', ' ').split()
+        if len(parts) < 2: # 
+            raise InvalidTimeError(f"Invalid time string format: \"{time_string}\".") # 
+
+        hour = parse_number(parts[0]) # 
+        minute = parse_number(parts[1]) # 
+
+        if hour != hour or minute != minute: # Check for NaN
+            raise InvalidTimeError(f"Invalid number in time string: \"{time_string}\"") # 
+
+        period = 'day' # 
+        if len(parts) > 2: # 
+            period_str = parts[2].lower() # 
+            if period_str in ['night', 'ማታ']: # 
+                period = 'night' # 
+        
+        return cls(hour, minute, period) # 
+
     
