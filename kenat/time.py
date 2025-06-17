@@ -28,4 +28,24 @@ class Time:
         self.minute = minute # 
         self.period = period # 
 
+    @classmethod
+    def from_gregorian(cls, hour, minute=0):
+        """
+        Creates a Time instance from a Gregorian 24-hour time. 
+        """
+        validate_numeric_inputs('Time.from_gregorian', hour=hour, minute=minute) # 
+        if not 0 <= hour <= 23: # 
+            raise InvalidTimeError(f"Invalid Gregorian hour: {hour}. Must be between 0 and 23.") # 
+        
+        # Normalize Gregorian hour to an Ethiopian base (where 6 AM is 0)
+        temp_hour = hour - 6 # 
+        if temp_hour < 0: # 
+            temp_hour += 24 # 
+
+        period = 'day' if temp_hour < 12 else 'night' # 
+        eth_hour = temp_hour % 12 # 
+        eth_hour = 12 if eth_hour == 0 else eth_hour # 
+
+        return cls(eth_hour, minute, period) # 
+
     
