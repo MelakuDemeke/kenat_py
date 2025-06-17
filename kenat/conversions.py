@@ -108,3 +108,14 @@ def _jd_to_hijri(jd):
     year = 30 * n + j - 30
     return {'year': year, 'month': month, 'day': day}
 
+def hijri_to_gregorian(h_year, h_month, h_day):
+    """
+    Converts a Hijri date to a Gregorian date object using a pure Python algorithm.
+    This is an arithmetic conversion and may differ by a day from observational calendars.
+    """
+    try:
+        jd = _hijri_to_jd(h_year, h_month, h_day)
+        return _jd_to_gregorian(jd)
+    except (ValueError, TypeError):
+        raise KenatError(f"Invalid Hijri date provided: {h_year}-{h_month}-{h_day}")
+
