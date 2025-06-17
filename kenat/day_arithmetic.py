@@ -114,3 +114,21 @@ def diff_in_days(date_a, date_b):
 
     return total_days(date_a) - total_days(date_b) # 
 
+def diff_in_months(date_a, date_b):
+    """
+    Calculates the difference in months between two Ethiopian dates.
+    """
+    validate_ethiopian_date_object(date_a, 'diff_in_months', 'a') # 
+    validate_ethiopian_date_object(date_b, 'diff_in_months', 'b') # 
+    
+    total_months_a = date_a['year'] * 13 + (date_a['month'] - 1) # 
+    total_months_b = date_b['year'] * 13 + (date_b['month'] - 1) # 
+    
+    diff = total_months_a - total_months_b # 
+    
+    # Adjust if the day of the later date hasn't been reached yet
+    if date_a['day'] < date_b['day']: # 
+        diff -= 1 # 
+        
+    return diff
+
