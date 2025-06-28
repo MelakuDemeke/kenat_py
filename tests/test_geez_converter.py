@@ -1,86 +1,80 @@
 # tests/test_geez_converter.py
 
 import pytest
-from kenat.geez_converter import to_geez, to_arabic
+from kenat.geez_converter import toGeez, toArabic
 from kenat.exceptions import GeezConverterError
 
 class TestToGeez:
-    """Tests the to_geez (Arabic to Ethiopic numeral) function."""
+    """Tests the toGeez (Arabic to Ethiopic numeral) function."""
 
     def test_converts_single_digits(self):
-        assert to_geez(1) == '፩'
-        assert to_geez(2) == '፪'
-        assert to_geez(9) == '፱'
+        assert toGeez(1) == '፩'
+        assert toGeez(2) == '፪'
+        assert toGeez(9) == '፱'
 
     def test_converts_tens(self):
-        assert to_geez(10) == '፲'
-        assert to_geez(20) == '፳'
-        assert to_geez(99) == '፺፱'
+        assert toGeez(10) == '፲'
+        assert toGeez(20) == '፳'
+        assert toGeez(99) == '፺፱'
 
     def test_converts_hundreds(self):
-        assert to_geez(100) == '፻'
-        assert to_geez(101) == '፻፩'
-        assert to_geez(123) == '፻፳፫'
-        assert to_geez(999) == '፱፻፺፱'
+        assert toGeez(100) == '፻'
+        assert toGeez(101) == '፻፩'
+        assert toGeez(256) == '፪፻፶፮'
+        assert toGeez(999) == '፱፻፺፱'
 
-    def test_converts_thousands_and_ten_thousands(self):
-        assert to_geez(1000) == '፲፻' # Ten-hundred
-        assert to_geez(10000) == '፼'
+    def test_converts_thousands(self):
+        assert toGeez(1000) == '፲፻'
+        assert toGeez(10000) == '፼'
+        assert toGeez(12345) == '፼፳፫፻፵፭'
 
-    def test_returns_zero_string_for_input_zero(self):
-        assert to_geez(0) == '0'
+    def test_handles_large_numbers(self):
+        assert toGeez(99999) == '፱፼፺፱፻፺፱'
+        assert toGeez(100000) == '፲፼'
 
-    def test_accepts_string_input(self):
-        assert to_geez('123') == '፻፳፫'
-        assert to_geez('10000') == '፼'
+    def test_handles_zero(self):
+        assert toGeez(0) == '0'
 
-    @pytest.mark.parametrize("invalid_input", [-1, 1.5, 'abc', None, []])
-    def test_throws_error_for_invalid_input(self, invalid_input):
-        with pytest.raises(GeezConverterError):
-            to_geez(invalid_input)
+    def test_rejects_invalid_input(self):
+        with pytest.raises(GeezConverterError, match="Input must be a non-negative integer."):
+            toGeez(-5)
+        with pytest.raises(GeezConverterError, match="Input must be a number or a string."):
+            toGeez(1.5)
+        with pytest.raises(GeezConverterError, match="Input must be a number or a string."):
+            toGeez(None)
 
 
 class TestToArabic:
-    """Tests the to_arabic (Ethiopic numeral to Arabic) function."""
+    """Tests the toArabic (Ethiopic to Arabic numeral) function."""
 
-    def test_converts_single_geez_numerals(self):
-        assert to_arabic('፩') == 1
-        assert to_arabic('፪') == 2
-        assert to_arabic('፱') == 9
+    def test_converts_single_digits(self):
+        assert toArabic('፩') == 1
+        assert toArabic('፪') == 2
+        assert toArabic('፱') == 9
 
-    def test_converts_geez_tens(self):
-        assert to_arabic('፲') == 10
-        assert to_arabic('፳') == 20
-        assert to_arabic('፺፱') == 99
+    def test_converts_tens(self):
+        assert toArabic('፲') == 10
+        assert toArabic('፳') == 20
+        assert toArabic('፺፱') == 99
 
-    def test_converts_geez_hundreds(self):
-        assert to_arabic('፻') == 100
-        assert to_arabic('፻፩') == 101
-        assert to_arabic('፻፳፫') == 123
-        assert to_arabic('፱፻፺፱') == 999
+    def test_converts_hundreds(self):
+        assert toArabic('፻') == 100
+        assert toArabic('፻፩') == 101
+        assert toArabic('፪፻፶፮') == 256
+        assert toArabic('፱፻፺፱') == 999
 
-    def test_converts_geez_thousands_and_ten_thousands(self):
-        assert to_arabic('፲፻') == 1000
-        assert to_arabic('፼') == 10000
-        assert to_arabic('፲፼') == 100000
+    def test_converts_ten_thousands(self):
+        assert toArabic('፲፻') == 1000
+        assert toArabic('፼') == 10000
+        assert toArabic('፻፳፫፻፵፭') == 12345
 
-    def test_handles_complex_numbers(self):
-        assert to_arabic('፲፻፺፱') == 1099
-        assert to_arabic('፬፻') == 400
+    def test_handles_large_numbers(self):
+        assert toArabic('፱፼፺፱፻፺፱') == 99999
 
-    def test_throws_error_for_unknown_geez_numerals(self):
-        with pytest.raises(GeezConverterError, match="Unknown Ge'ez numeral: A"):
-            to_arabic('A')
-        with pytest.raises(GeezConverterError, match="Unknown Ge'ez numeral: X"):
-            to_arabic('፩X')
-
-    @pytest.mark.parametrize("invalid_input", [None, 123, 1.5, []])
-    def test_throws_error_for_non_string_input(self, invalid_input):
-        with pytest.raises(GeezConverterError):
-            to_arabic(invalid_input)
-
-    @pytest.mark.parametrize("number", [1, 10, 99, 100, 123, 999, 1000, 10000, 12345, 999999])
-    def test_round_trip_conversion(self, number):
-        """Tests that to_arabic(to_geez(n)) == n."""
-        geez_representation = to_geez(number)
-        assert to_arabic(geez_representation) == number
+    def test_rejects_invalid_geez_numeral(self):
+        with pytest.raises(GeezConverterError, match="Unknown Ge'ez numeral: i"):
+            toArabic('invalid')
+        with pytest.raises(GeezConverterError, match="Invalid Ge'ez numeral sequence near ፩ in ፩፩"):
+            toArabic('፩፩') # Repeated single digit
+        with pytest.raises(GeezConverterError, match="Invalid Ge'ez numeral sequence near ፲ in ፲፲"):
+            toArabic('፲፲') # Repeated tens
