@@ -61,7 +61,7 @@ def get_weekday(eth_date):
     """
     # Import locally to prevent circular dependency with the 'conversions' module
     from . import conversions
-    g = conversions.to_gc(eth_date['year'], eth_date['month'], eth_date['day'])
+    g = conversions.toGC(eth_date['year'], eth_date['month'], eth_date['day'])
     # The getDay() method in JS returns 0 for Sunday, which matches Python's isoweekday() % 7 behavior.
     # Python's weekday() is 0 for Monday. JS getDay() is 0 for Sunday.
     # The source new Date(...).getDay() is 0 for Sunday.
