@@ -15,23 +15,23 @@ def _find_all_islamic_occurrences(ethiopian_year, hijri_month, hijri_day):
     Finds all occurrences of an Islamic date within an Ethiopian year.
     This version is a faithful port of the original JS logic.
     """
-    start_gc = conversions.to_gc(ethiopian_year, 1, 1)
-    end_gc = conversions.to_gc(ethiopian_year, 13, 5)
+    start_gc = conversions.toGC(ethiopian_year, 1, 1)
+    end_gc = conversions.toGC(ethiopian_year, 13, 5)
     
     occurrences = []
     
     # Check both the Gregorian year of the start and end of the Ethiopian year
     for g_year in range(start_gc.year, end_gc.year + 1):
         # Get the Hijri year at the start of this Gregorian year
-        hijri_year_at_start = conversions.get_hijri_year(datetime.date(g_year, 1, 1))
+        hijri_year_at_start = conversions.getHijriYear(datetime.date(g_year, 1, 1))
         
         # An Islamic date can only fall in one of two Hijri years for a given Gregorian year
         for h_year in [hijri_year_at_start, hijri_year_at_start + 1]:
             # Use our new search-based conversion function
-            greg_date = conversions.hijri_to_gregorian(h_year, hijri_month, hijri_day, g_year)
+            greg_date = conversions.hijriToGregorian(h_year, hijri_month, hijri_day, g_year)
             
             if greg_date: # If a date was found
-                ec_date = conversions.to_ec(greg_date.year, greg_date.month, greg_date.day)
+                ec_date = conversions.toEC(greg_date.year, greg_date.month, greg_date.day)
                 if ec_date['year'] == ethiopian_year:
                     occurrences.append({
                         'gregorian': {'year': greg_date.year, 'month': greg_date.month, 'day': greg_date.day},
@@ -65,8 +65,8 @@ def get_holiday(holiday_key, eth_year, lang='amharic'):
 
     tewsak_key = KEY_TO_TEWSAK_MAP.get(holiday_key)
     if tewsak_key:
-        date = bahire_hasab.get_movable_holiday(tewsak_key, eth_year)
-        gregorian = conversions.to_gc(date['year'], date['month'], date['day'])
+        date = bahire_hasab.getMovableHoliday(tewsak_key, eth_year)
+        gregorian = conversions.toGC(date['year'], date['month'], date['day'])
         return {
             'key': holiday_key, 'tags': MOVABLE_HOLIDAYS.get(holiday_key, {}).get('tags', []), 'movable': True,
             'name': name, 'description': description, 'ethiopian': date, 
