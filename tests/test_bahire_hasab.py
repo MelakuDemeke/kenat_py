@@ -1,5 +1,5 @@
 import pytest
-from kenat.bahire_hasab import get_bahire_hasab, get_movable_holiday
+from kenat.bahire_hasab import getBahireHasab, getMovableHoliday
 from kenat.exceptions import InvalidInputTypeError
 
 # By using a class, we can group all related tests, similar to `describe` in Jest.
@@ -17,7 +17,7 @@ class TestBahireHasab:
         # This is more efficient than calling get_bahire_hasab in every test.
         @pytest.fixture(scope="class")
         def bahire_hasab_2016(self):
-            return get_bahire_hasab(2016)
+            return getBahireHasab(2016)
 
         def test_should_calculate_amete_alem_and_metene_rabiet_correctly(self, bahire_hasab_2016):
             assert bahire_hasab_2016['ameteAlem'] == 7516
@@ -45,7 +45,7 @@ class TestBahireHasab:
         Tests the language option.
         """
         def test_should_return_names_in_english_when_specified(self):
-            bahire_hasab_english = get_bahire_hasab(2016, lang='english')
+            bahire_hasab_english = getBahireHasab(2016, lang='english')
             assert bahire_hasab_english['evangelist']['name'] == 'John'
             assert bahire_hasab_english['newYear']['dayName'] == 'Tuesday'
 
@@ -56,7 +56,7 @@ class TestBahireHasab:
         """
         @pytest.fixture(scope="class")
         def movable_feasts(self):
-            return get_bahire_hasab(2016, lang='english')['movableFeasts']
+            return getBahireHasab(2016, lang='english')['movableFeasts']
 
         def test_should_return_a_complete_movable_feasts_object(self, movable_feasts):
             assert movable_feasts is not None
@@ -83,7 +83,7 @@ class TestBahireHasab:
         def test_should_throw_invalid_input_type_error_for_non_numeric_input(self):
             # pytest.raises serves the same purpose as expect().toThrow()
             with pytest.raises(InvalidInputTypeError):
-                get_bahire_hasab('2016')
+                getBahireHasab('2016')
 
             with pytest.raises(InvalidInputTypeError):
-                get_movable_holiday('TINSAYE', '2016')
+                getMovableHoliday('TINSAYE', '2016')
