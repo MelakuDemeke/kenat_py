@@ -29,12 +29,12 @@ class Kenat:
         # Default to current date and time if no input is provided 
         if year is None:
             today_greg = datetime.datetime.now()
-            self._ethiopian = conversions.to_ec(today_greg.year, today_greg.month, today_greg.day)
+            self._ethiopian = conversions.toEC(today_greg.year, today_greg.month, today_greg.day)
             self._time = Time.from_gregorian(today_greg.hour, today_greg.minute)
         
         # From a datetime object 
         elif isinstance(year, (datetime.datetime, datetime.date)):
-            self._ethiopian = conversions.to_ec(year.year, year.month, year.day)
+            self._ethiopian = conversions.toEC(year.year, year.month, year.day)
             self._time = Time.from_gregorian(year.hour, year.minute) if isinstance(year, datetime.datetime) else Time(12, 0, 'day')
 
         # From a dictionary {'year', 'month', 'day'} 
@@ -87,7 +87,7 @@ class Kenat:
         
     def to_gregorian_date(self):
         """Returns the Gregorian date as a Python datetime.date object."""
-        return conversions.to_gc(self.year, self.month, self.day)
+        return conversions.toGC(self.year, self.month, self.day)
 
     # --- Information Methods ---
     def get_bahire_hasab(self, lang='amharic'):
@@ -225,7 +225,7 @@ class Kenat:
 
         for day in range(1, days_in_month + 1):
             eth_date = {'year': year, 'month': month, 'day': day}
-            greg_date = conversions.to_gc(year, month, day) # This returns a datetime.date object
+            greg_date = conversions.toGC(year, month, day) # This returns a datetime.date object
 
             ethiopian_display = ""
             if use_geez:
