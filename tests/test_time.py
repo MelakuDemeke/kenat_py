@@ -99,4 +99,8 @@ class TestTimeFormatting:
         
     def test_format_with_dash_for_zero(self):
         time = Time(12, 0, 'day')
-        assert time.format(use_geez=False, zero_as_dash=True) == '12:_ day'
+        assert time.format(use_geez=False, zero_as_dash=True) == '12:-- day'
+
+    def test_format_with_period_labels(self):
+        time = Time(5, 30, 'day')
+        assert time.format(show_period=True) == '፭:፴ ጠዋት'
