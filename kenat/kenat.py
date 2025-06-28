@@ -1,5 +1,5 @@
 import datetime
-from .geez_converter import to_geez
+from .geez_converter import toGeez
 from . import (
     conversions,
     holidays,
@@ -215,7 +215,7 @@ class Kenat:
         """
         # These local imports are fine.
         from .constants import MONTH_NAMES
-        from .geez_converter import to_geez
+        from .geez_converter import toGeez
         from . import utils, conversions
 
         year = year or self.year
@@ -229,7 +229,7 @@ class Kenat:
 
             ethiopian_display = ""
             if use_geez:
-                ethiopian_display = f"{MONTH_NAMES['amharic'][month - 1]} {to_geez(day)} {to_geez(year)}"
+                ethiopian_display = f"{MONTH_NAMES['amharic'][month - 1]} {toGeez(day)} {toGeez(year)}"
             else:
                 ethiopian_display = f"{MONTH_NAMES['amharic'][month - 1]} {day} {year}"
 
