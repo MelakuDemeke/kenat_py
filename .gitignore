@@ -7,3 +7,5 @@ kenat_ethiopian_calendar.egg-info
 dist
 publish.py
 .env
+allPycode.txt
+jsver.txt
