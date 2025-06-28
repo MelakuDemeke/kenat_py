@@ -1,6 +1,6 @@
 import pytest
 from kenat.holidays import get_holidays_in_month, get_holiday
-from kenat.bahire_hasab import get_movable_holiday
+from kenat.bahire_hasab import getMovableHoliday
 from kenat.exceptions import InvalidInputTypeError, UnknownHolidayError
 
 
@@ -39,7 +39,7 @@ def test_returns_correct_movable_christian_holidays():
     (2016, {'year': 2016, 'month': 8, 'day': 27}),
 ])
 def test_returns_correct_tinsaye_date(year, expected):
-    assert get_movable_holiday('TINSAYE', year) == expected
+    assert getMovableHoliday('TINSAYE', year) == expected
 
 
 @pytest.mark.parametrize("year, expected", [
@@ -50,7 +50,7 @@ def test_returns_correct_tinsaye_date(year, expected):
     (2016, {'year': 2016, 'month': 8, 'day': 25}),
 ])
 def test_returns_correct_siklet_date(year, expected):
-    assert get_movable_holiday('SIKLET', year) == expected
+    assert getMovableHoliday('SIKLET', year) == expected
 
 
 # -------------------
@@ -75,12 +75,12 @@ def test_get_holidays_in_month_invalid_month_range(month):
 @pytest.mark.parametrize("year", [None, '2016'])
 def test_get_movable_holiday_invalid_year_type(year):
     with pytest.raises(InvalidInputTypeError):
-        get_movable_holiday('TINSAYE', year)
+        getMovableHoliday('TINSAYE', year)
 
 
 def test_get_movable_holiday_unknown_key():
     with pytest.raises(UnknownHolidayError):
-        get_movable_holiday('UNKNOWN_HOLIDAY', 2016)
+        getMovableHoliday('UNKNOWN_HOLIDAY', 2016)
 
 
 # -------------------
