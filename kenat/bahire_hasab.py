@@ -1,6 +1,6 @@
 from .utils import validate_numeric_inputs, get_weekday
 from .day_arithmetic import addDays
-from .conversions import to_gc
+from .conversions import toGC
 from .exceptions import UnknownHolidayError
 from .constants import (
     DAYS_OF_WEEK,
@@ -53,7 +53,7 @@ def _calculate_bahire_hasab_base(ethiopian_year):
         'nineveh_date': nineveh_date,  
     }
 
-def get_bahire_hasab(ethiopian_year, lang='amharic'):
+def getBahireHasab(ethiopian_year, lang='amharic'):
     """
     Calculates all Bahire Hasab values for a given Ethiopian year. 
 
@@ -64,7 +64,7 @@ def get_bahire_hasab(ethiopian_year, lang='amharic'):
     Returns:
         dict: An object containing all the calculated Bahire Hasab values. 
     """
-    validate_numeric_inputs('get_bahire_hasab', ethiopian_year=ethiopian_year)  
+    validate_numeric_inputs('getBahireHasab', ethiopian_year=ethiopian_year)  
     
     base = _calculate_bahire_hasab_base(ethiopian_year)  
 
@@ -93,7 +93,7 @@ def get_bahire_hasab(ethiopian_year, lang='amharic'):
                 'name': info.get('name', {}).get(lang) or info.get('name', {}).get('english'),  
                 'description': info.get('description', {}).get(lang) or info.get('description', {}).get('english'),  
                 'ethiopian': date,  
-                'gregorian': to_gc(date['year'], date['month'], date['day'])  
+                'gregorian': toGC(date['year'], date['month'], date['day'])  
             }
 
     return {  
@@ -111,7 +111,7 @@ def get_bahire_hasab(ethiopian_year, lang='amharic'):
         'movableFeasts': movable_feasts
     }
 
-def get_movable_holiday(holiday_key, ethiopian_year):
+def getMovableHoliday(holiday_key, ethiopian_year):
     """
     Calculates the date of a movable holiday for a given year. 
 
@@ -122,7 +122,7 @@ def get_movable_holiday(holiday_key, ethiopian_year):
     Returns:
         dict: An Ethiopian date object {'year', 'month', 'day'}. 
     """
-    validate_numeric_inputs('get_movable_holiday', ethiopian_year=ethiopian_year)  
+    validate_numeric_inputs('getMovableHoliday', ethiopian_year=ethiopian_year)  
 
     tewsak = MOVABLE_HOLIDAY_TEWSAK.get(holiday_key)  
     if tewsak is None:  
