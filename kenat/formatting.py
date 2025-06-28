@@ -1,4 +1,4 @@
-from .geez_converter import to_geez
+from .geez_converter import toGeez
 from .constants import MONTH_NAMES, DAYS_OF_WEEK
 from .utils import get_weekday
 
@@ -17,7 +17,7 @@ def format_in_geez_amharic(et_date):
     Example: "መስከረም ፲፩ ፳፻፲፮" 
     """
     month_name = MONTH_NAMES['amharic'][et_date['month'] - 1] 
-    return f"{month_name} {to_geez(et_date['day'])} {to_geez(et_date['year'])}" 
+    return f"{month_name} {toGeez(et_date['day'])} {toGeez(et_date['year'])}" 
 
 def format_with_time(et_date, time_obj, lang='amharic'):
     """
@@ -36,8 +36,8 @@ def format_with_weekday(et_date, lang='amharic', use_geez=False):
     weekday_index = get_weekday(et_date) 
     weekday_name = DAYS_OF_WEEK.get(lang, DAYS_OF_WEEK['amharic'])[weekday_index] 
     month_name = MONTH_NAMES.get(lang, MONTH_NAMES['amharic'])[et_date['month'] - 1] 
-    day = to_geez(et_date['day']) if use_geez else et_date['day'] 
-    year = to_geez(et_date['year']) if use_geez else et_date['year'] 
+    day = toGeez(et_date['day']) if use_geez else et_date['day'] 
+    year = toGeez(et_date['year']) if use_geez else et_date['year'] 
 
     return f"{weekday_name}, {month_name} {day} {year}" 
 
@@ -64,4 +64,4 @@ def to_iso_date_string(et_date, time_obj=None):
 
     hr = str(time_obj.hour).zfill(2) 
     minute = str(time_obj.minute).zfill(2) 
-    return f"{y}-{m}-{d}T{hr}:{minute}" 
+    return f"{y}-{m}-{d}T{hr}:{minute}"

@@ -1,6 +1,6 @@
 from .kenat import Kenat
 from .conversions import toEC, toGC
-from .geez_converter import to_arabic, to_geez
+from .geez_converter import toArabic, toGeez
 from .holidays import get_holidays_in_month, get_holiday, get_holidays_for_year
 from .bahire_hasab import getBahireHasab
 from .month_grid import MonthGrid
@@ -11,8 +11,8 @@ __all__ = [
     'Kenat',
     'toEC',
     'toGC',
-    'to_arabic',
-    'to_geez',
+    'toArabic',
+    'toGeez',
     'get_holidays_in_month',
     'get_holidays_for_year',
     'getBahireHasab',
