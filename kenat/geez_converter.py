@@ -8,7 +8,7 @@ SYMBOLS = {
     'ten_thousand': '፼'
 }
 
-def to_geez(input_num):
+def toGeez(input_num):
     """
     Converts a natural number to an Ethiopic numeral string.
     
@@ -60,11 +60,11 @@ def to_geez(input_num):
     remainder = num % 10000
     
     # If the ten-thousand part is 1, no prefix is needed (e.g., ፼, not ፩፼)
-    ten_thousand_geez = (to_geez(ten_thousand_part) if ten_thousand_part > 1 else '') + SYMBOLS['ten_thousand']
+    ten_thousand_geez = (toGeez(ten_thousand_part) if ten_thousand_part > 1 else '') + SYMBOLS['ten_thousand']
     
-    return ten_thousand_geez + (to_geez(remainder) if remainder > 0 else '')
+    return ten_thousand_geez + (toGeez(remainder) if remainder > 0 else '')
 
-def to_arabic(geez_str):
+def toArabic(geez_str):
     """
     Converts a Ge'ez numeral string to its Arabic numeral equivalent.
 
@@ -89,6 +89,7 @@ def to_arabic(geez_str):
     
     total = 0
     current_number = 0
+    processed_orders = set()
 
     for char in geez_str:
         value = reverse_map.get(char)
@@ -103,8 +104,12 @@ def to_arabic(geez_str):
             if value == 10000:
                 total += current_number
                 current_number = 0
+            processed_orders = set() # Reset for next segment
         else:
-            # Add simple digit values (1-99)
+            order = 10 if value % 10 == 0 and value != 0 else 1
+            if order in processed_orders:
+                raise GeezConverterError(f"Invalid Ge'ez numeral sequence near {char} in {geez_str}")
+            processed_orders.add(order)
             current_number += value
     
     # Add any remaining part (for numbers that don't end in ፼)
