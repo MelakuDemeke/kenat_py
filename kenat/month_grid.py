@@ -1,5 +1,5 @@
 from . import holidays
-from .geez_converter import to_geez
+from .geez_converter import toGeez
 from .constants import DAYS_OF_WEEK, MONTH_NAMES
 from .utils import get_weekday, validate_numeric_inputs
 from .exceptions import InvalidGridConfigError
@@ -78,9 +78,9 @@ class MonthGrid:
             
             days_with_weekday.append({
                 'ethiopian': {
-                    'year': to_geez(eth['year']) if self.use_geez else eth['year'],
+                    'year': toGeez(eth['year']) if self.use_geez else eth['year'],
                     'month': month_labels[eth['month'] - 1],
-                    'day': to_geez(eth['day']) if self.use_geez else eth['day']
+                    'day': toGeez(eth['day']) if self.use_geez else eth['day']
                 },
                 'gregorian': day_data['gregorian'],
                 'weekday': weekday,
@@ -100,7 +100,7 @@ class MonthGrid:
         return {
             'headers': headers,
             'days': [padded_days[i:i + 7] for i in range(0, len(padded_days), 7)],
-            'year': to_geez(self.year) if self.use_geez else self.year,
+            'year': toGeez(self.year) if self.use_geez else self.year,
             'month': self.month,
             'month_name': month_labels[self.month - 1]
         }
