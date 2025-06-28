@@ -5,7 +5,7 @@ from .utils import (
     validate_ethiopian_date_object
 )
 
-def add_days(ethiopian, days):
+def addDays(ethiopian, days):
     """
     Adds a specified number of days to an Ethiopian date.
 
@@ -16,8 +16,8 @@ def add_days(ethiopian, days):
     Returns:
         dict: The resulting Ethiopian date.
     """
-    validate_ethiopian_date_object(ethiopian, 'add_days', 'ethiopian') # 
-    validate_numeric_inputs('add_days', days=days) # 
+    validate_ethiopian_date_object(ethiopian, 'addDays', 'ethiopian') # 
+    validate_numeric_inputs('addDays', days=days) # 
     
     # Create mutable copies
     year, month, day = ethiopian['year'], ethiopian['month'], ethiopian['day']
@@ -33,7 +33,7 @@ def add_days(ethiopian, days):
             
     return {'year': year, 'month': month, 'day': day}
 
-def add_months(ethiopian, months):
+def addMonths(ethiopian, months):
     """
     Adds a specified number of months to an Ethiopian date.
 
@@ -44,8 +44,8 @@ def add_months(ethiopian, months):
     Returns:
         dict: The resulting Ethiopian date.
     """
-    validate_ethiopian_date_object(ethiopian, 'add_months', 'ethiopian') # 
-    validate_numeric_inputs('add_months', months=months) # 
+    validate_ethiopian_date_object(ethiopian, 'addMonths', 'ethiopian') # 
+    validate_numeric_inputs('addMonths', months=months) # 
     
     year, month, day = ethiopian['year'], ethiopian['month'], ethiopian['day']
     
@@ -61,7 +61,7 @@ def add_months(ethiopian, months):
         
     return {'year': year, 'month': month, 'day': day}
 
-def add_years(ethiopian, years):
+def addYears(ethiopian, years):
     """
     Adds a specified number of years to an Ethiopian date.
 
@@ -72,8 +72,8 @@ def add_years(ethiopian, years):
     Returns:
         dict: The resulting Ethiopian date.
     """
-    validate_ethiopian_date_object(ethiopian, 'add_years', 'ethiopian') # 
-    validate_numeric_inputs('add_years', years=years) # 
+    validate_ethiopian_date_object(ethiopian, 'addYears', 'ethiopian') # 
+    validate_numeric_inputs('addYears', years=years) # 
 
     year, month, day = ethiopian['year'], ethiopian['month'], ethiopian['day']
     year += years # 
@@ -85,7 +85,7 @@ def add_years(ethiopian, years):
         
     return {'year': year, 'month': month, 'day': day}
 
-def diff_in_days(date_a, date_b):
+def diffInDays(date_a, date_b):
     """
     Calculates the difference in days between two Ethiopian dates.
 
@@ -96,8 +96,8 @@ def diff_in_days(date_a, date_b):
     Returns:
         int: The difference in days.
     """
-    validate_ethiopian_date_object(date_a, 'diff_in_days', 'a') # 
-    validate_ethiopian_date_object(date_b, 'diff_in_days', 'b') # 
+    validate_ethiopian_date_object(date_a, 'diffInDays', 'a') # 
+    validate_ethiopian_date_object(date_b, 'diffInDays', 'b') # 
 
     def total_days(eth_date): # 
         """Helper to count days from a fixed epoch (year 1, month 1, day 1)."""
@@ -114,12 +114,12 @@ def diff_in_days(date_a, date_b):
 
     return total_days(date_a) - total_days(date_b) # 
 
-def diff_in_months(date_a, date_b):
+def diffInMonths(date_a, date_b):
     """
     Calculates the difference in months between two Ethiopian dates.
     """
-    validate_ethiopian_date_object(date_a, 'diff_in_months', 'a') # 
-    validate_ethiopian_date_object(date_b, 'diff_in_months', 'b') # 
+    validate_ethiopian_date_object(date_a, 'diffInMonths', 'a') # 
+    validate_ethiopian_date_object(date_b, 'diffInMonths', 'b') # 
     
     total_months_a = date_a['year'] * 13 + (date_a['month'] - 1) # 
     total_months_b = date_b['year'] * 13 + (date_b['month'] - 1) # 
@@ -132,12 +132,12 @@ def diff_in_months(date_a, date_b):
         
     return diff
 
-def diff_in_years(date_a, date_b):
+def diffInYears(date_a, date_b):
     """
     Calculates the difference in years between two Ethiopian dates.
     """
-    validate_ethiopian_date_object(date_a, 'diff_in_years', 'a') # 
-    validate_ethiopian_date_object(date_b, 'diff_in_years', 'b') # 
+    validate_ethiopian_date_object(date_a, 'diffInYears', 'a') # 
+    validate_ethiopian_date_object(date_b, 'diffInYears', 'b') # 
     
     diff = date_a['year'] - date_b['year']
     

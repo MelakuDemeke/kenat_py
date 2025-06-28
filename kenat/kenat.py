@@ -179,16 +179,16 @@ class Kenat:
         """Returns a new Kenat instance with the added duration."""
         new_date = self._ethiopian
         if years:
-            new_date = day_arithmetic.add_years(new_date, years)
+            new_date = day_arithmetic.addYears(new_date, years)
         if months:
-            new_date = day_arithmetic.add_months(new_date, months)
+            new_date = day_arithmetic.addMonths(new_date, months)
         if days:
-            new_date = day_arithmetic.add_days(new_date, days)
+            new_date = day_arithmetic.addDays(new_date, days)
         return Kenat(year=new_date)
 
     def diff_in_days(self, other):
         """Calculates the difference in days between this and another Kenat instance."""
-        return day_arithmetic.diff_in_days(self._ethiopian, other._ethiopian) 
+        return day_arithmetic.diffInDays(self._ethiopian, other._ethiopian)
 
     # --- Calendar Grid Generation ---
     @staticmethod

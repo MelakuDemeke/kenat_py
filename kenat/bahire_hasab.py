@@ -1,5 +1,5 @@
 from .utils import validate_numeric_inputs, get_weekday
-from .day_arithmetic import add_days
+from .day_arithmetic import addDays
 from .conversions import to_gc
 from .exceptions import UnknownHolidayError
 from .constants import (
@@ -82,7 +82,7 @@ def get_bahire_hasab(ethiopian_year, lang='amharic'):
     for tewsak_key, tewsak_value in MOVABLE_HOLIDAY_TEWSAK.items():  
         holiday_key = tewsak_to_key_map.get(tewsak_key)  
         if holiday_key:  
-            date = add_days(base['nineveh_date'], tewsak_value)  
+            date = addDays(base['nineveh_date'], tewsak_value)  
             info = HOLIDAY_INFO.get(holiday_key, {})  
             rules = MOVABLE_HOLIDAYS.get(holiday_key, {})  
             
@@ -130,4 +130,4 @@ def get_movable_holiday(holiday_key, ethiopian_year):
     
     base = _calculate_bahire_hasab_base(ethiopian_year)  
 
-    return add_days(base['nineveh_date'], tewsak) 
+    return addDays(base['nineveh_date'], tewsak)
