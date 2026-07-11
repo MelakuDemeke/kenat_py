@@ -75,6 +75,31 @@ class TestBahireHasab:
             assert abiy_tsome['ethiopian'] == {'year': 2016, 'month': 7, 'day': 2}
             assert abiy_tsome['name'] == 'Great Lent'
 
+    # Regression test for the Bahire Hasab "Metqi 30/0 edge case" (e.g. EY 2006),
+    # where (wenber * 19) % 30 == 0 must be treated as day 30, not day 0.
+    class TestGetBahireHasabFor2006MetqiEdgeCase:
+        @pytest.fixture(scope="class")
+        def bahire_hasab_2006(self):
+            return getBahireHasab(2006)
+
+        def test_should_not_raise_and_should_treat_metqi_of_zero_as_30(self):
+            # Must not raise InvalidEthiopianDateError for a day-0 bealeMetqiDate.
+            getBahireHasab(2006)
+
+        def test_metqi_is_30(self, bahire_hasab_2006):
+            assert bahire_hasab_2006['metqi'] == 30
+
+        def test_should_place_beale_metqi_on_meskerem_30(self, bahire_hasab_2006):
+            assert bahire_hasab_2006['bealeMetqi']['date'] == {'year': 2006, 'month': 1, 'day': 30}
+
+        def test_should_roll_nineveh_month_over_when_tewsak_sum_exceeds_30(self, bahire_hasab_2006):
+            assert bahire_hasab_2006['mebajaHamer'] == 3
+            assert bahire_hasab_2006['nineveh'] == {'year': 2006, 'month': 6, 'day': 3}
+
+        def test_should_correctly_calculate_fasika_2006(self, bahire_hasab_2006):
+            fasika = bahire_hasab_2006['movableFeasts']['fasika']
+            assert fasika['ethiopian'] == {'year': 2006, 'month': 8, 'day': 12}
+
     # A final nested class for error handling.
     class TestErrorHandling:
         """

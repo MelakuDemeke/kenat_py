@@ -21,8 +21,11 @@ def _calculate_bahire_hasab_base(ethiopian_year):
     metene_rabiet = amete_alem // 4  
     medeb = amete_alem % 19  
     wenber = 18 if medeb == 0 else medeb - 1  
-    abektie = (wenber * 11) % 30  
-    metqi = (wenber * 19) % 30  
+    abektie = (wenber * 11) % 30
+    raw_metqi = (wenber * 19) % 30
+    # A raw remainder of 0 corresponds to day 30, not day 0 (there is no "day zero"
+    # in this calendar), matching TS's rawMetqi === 0 ? 30 : rawMetqi correction.
+    metqi = 30 if raw_metqi == 0 else raw_metqi
 
     beale_metqi_month = 1 if metqi > 14 else 2  
     beale_metqi_day = metqi  
