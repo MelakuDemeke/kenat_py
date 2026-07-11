@@ -41,6 +41,59 @@ def _find_all_islamic_occurrences(ethiopian_year, hijri_month, hijri_day):
     # Remove duplicates
     return list({json.dumps(item['ethiopian']): item for item in occurrences}.values())
 
+def find_hijri_month_ranges(ethiopian_year, hijri_month):
+    """
+    Finds the start and end dates of a specific Hijri month that falls within an
+    Ethiopian year. Used to compute the Ramadan fasting range.
+
+    Args:
+        ethiopian_year (int): The Ethiopian year.
+        hijri_month (int): The Hijri month to find (e.g., 9 for Ramadan).
+
+    Returns:
+        list[dict]: A list of {'start': EthiopianDate, 'end': EthiopianDate} ranges.
+    """
+    start_gc = conversions.toGC(ethiopian_year, 1, 1)
+    end_gc = conversions.toGC(ethiopian_year, 13, 5)
+    ranges = []
+
+    def find_range_in_gregorian_year(g_year):
+        hijri_year_at_start = conversions.getHijriYear(datetime.date(g_year, 1, 1))
+        hijri_years_to_check = [hijri_year_at_start - 1, hijri_year_at_start, hijri_year_at_start + 1]
+
+        for h_year in hijri_years_to_check:
+            start_date_gregorian = conversions.hijriToGregorian(h_year, hijri_month, 1, g_year)
+            if not start_date_gregorian:
+                continue
+
+            next_month = 1 if hijri_month == 12 else hijri_month + 1
+            next_year = h_year + 1 if hijri_month == 12 else h_year
+
+            end_date_candidate = (
+                conversions.hijriToGregorian(next_year, next_month, 1, g_year)
+                or conversions.hijriToGregorian(next_year, next_month, 1, g_year + 1)
+            )
+            if not end_date_candidate:
+                continue
+            end_date_gregorian = end_date_candidate - datetime.timedelta(days=1)
+
+            start_ec = conversions.toEC(start_date_gregorian.year, start_date_gregorian.month, start_date_gregorian.day)
+            end_ec = conversions.toEC(end_date_gregorian.year, end_date_gregorian.month, end_date_gregorian.day)
+
+            if start_ec['year'] == ethiopian_year or end_ec['year'] == ethiopian_year:
+                ranges.append({'start': start_ec, 'end': end_ec})
+
+    find_range_in_gregorian_year(start_gc.year)
+    if start_gc.year != end_gc.year:
+        find_range_in_gregorian_year(end_gc.year)
+
+    unique_ranges = list({
+        f"{item['start']['year']}/{item['start']['month']}/{item['start']['day']}": item
+        for item in ranges
+    }.values())
+    return unique_ranges
+
+
 _get_all_moulid_dates = lambda year: _find_all_islamic_occurrences(year, 3, 12)
 _get_all_eid_fitr_dates = lambda year: _find_all_islamic_occurrences(year, 10, 1)
 _get_all_eid_adha_dates = lambda year: _find_all_islamic_occurrences(year, 12, 10)

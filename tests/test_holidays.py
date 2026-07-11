@@ -103,3 +103,35 @@ def test_returns_correct_eid_adha_date_2016():
     holiday = get_holiday('eidAdha', 2016)
     assert holiday is not None
     assert holiday['ethiopian'] == {'year': 2016, 'month': 10, 'day': 9}
+
+
+# -------------------
+# Fixed-holiday data regression
+# -------------------
+
+def test_beherbehereseb_falls_on_day_29():
+    # Regression test: Nations, Nationalities and Peoples' Day is Megabit 29, not 20.
+    holiday = get_holiday('beherbehereseb', 2016)
+    assert holiday is not None
+    assert holiday['ethiopian'] == {'year': 2016, 'month': 3, 'day': 29}
+
+
+def test_siklet_is_tagged_public():
+    # Regression test: Good Friday (siklet) must carry the PUBLIC tag.
+    holiday = get_holiday('siklet', 2016)
+    assert holiday is not None
+    assert 'public' in holiday['tags']
+
+
+def test_find_hijri_month_ranges_returns_ramadan_range_for_2016():
+    from kenat.holidays import find_hijri_month_ranges
+    ranges = find_hijri_month_ranges(2016, 9)  # 9 = Ramadan
+    assert len(ranges) >= 1
+    start = ranges[0]['start']
+    end = ranges[0]['end']
+    assert start['year'] == 2016
+    assert end['year'] == 2016
+    # The range should span roughly a lunar month (29 or 30 days).
+    from kenat.day_arithmetic import diffInDays
+    span = diffInDays(end, start)
+    assert 27 <= span <= 30
