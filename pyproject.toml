@@ -39,3 +39,6 @@ test = [
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["kenat"]
+
+[tool.setuptools.package-data]
+kenat = ["nigs.json"]

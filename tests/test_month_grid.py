@@ -103,3 +103,114 @@ class TestMonthGrid:
         # Should fail if week_start is out of range
         with pytest.raises(InvalidGridConfigError):
             MonthGrid(config={'year': 2016, 'month': 9, 'week_start': 7})
+
+    def test_flat_days_is_start_padded_only(self, mock_kenat_dependencies):
+        """flat_days mirrors MonthGrid.ts's shape: a flat list, padded with None only
+        at the start (unlike 'days', which is also end-padded to full weeks)."""
+        grid = MonthGrid.create(year=2016, month=9, week_start=1)
+        assert 'flat_days' in grid
+        assert isinstance(grid['flat_days'], list)
+        # 6 leading None entries (per test_pads_days_array_correctly) + 5 mock days.
+        assert grid['flat_days'][:6] == [None] * 6
+        assert len(grid['flat_days']) == 11
+        assert grid['flat_days'][-1] is not None
+
+    def test_days_shape_is_end_padded_to_full_weeks(self, mock_kenat_dependencies):
+        grid = MonthGrid.create(year=2016, month=9, week_start=1)
+        for week in grid['days']:
+            assert len(week) == 7
+
+    def test_create_with_no_args_uses_current_ethiopian_date(self, mock_kenat_dependencies):
+        # mock_now_instance._ethiopian is {'year': 2016, 'month': 9, 'day': 10}.
+        grid = MonthGrid.create()
+        assert grid['year'] == 2016
+        assert grid['month'] == 9
+
+
+class TestMonthGridModes:
+    """Tests mode ('christian'/'muslim'/'public') and show_all_saints, using the
+    real (unmocked) holidays/nigs.json data for a known Ethiopian year/month."""
+
+    def test_christian_mode_attaches_nigs_saints_gated_by_month(self):
+        # Meskerem (month 1) day 1 -> 'ledeta_mariam' declares negs: [9] in nigs.json,
+        # so it should NOT show up as a NIGS entry for month 1 unless show_all_saints.
+        grid_month1 = MonthGrid.create(year=2016, month=1, mode='christian')
+        flat = [d for d in grid_month1['flat_days'] if d]
+        day1 = next(d for d in flat if d['ethiopian']['day'] == 1)
+        nigs_keys = [h['key'] for h in day1['holidays'] if h.get('isNigs')]
+        assert 'ledeta_mariam' not in nigs_keys
+
+        # Genbot (month 9) day 1 -> negs includes 9, so it should show as NIGS.
+        grid_month9 = MonthGrid.create(year=2016, month=9, mode='christian')
+        flat9 = [d for d in grid_month9['flat_days'] if d]
+        day1_m9 = next(d for d in flat9 if d['ethiopian']['day'] == 1)
+        nigs_entry = next(h for h in day1_m9['holidays'] if h['key'] == 'ledeta_mariam')
+        assert nigs_entry['isNigs'] is True
+        assert 'NIGS' in nigs_entry['tags']
+
+    def test_show_all_saints_attaches_entries_regardless_of_month_match(self):
+        grid = MonthGrid.create(year=2016, month=1, mode='christian', show_all_saints=True)
+        flat = [d for d in grid['flat_days'] if d]
+        day1 = next(d for d in flat if d['ethiopian']['day'] == 1)
+        entry = next(h for h in day1['holidays'] if h['key'] == 'ledeta_mariam')
+        # Shown because show_all_saints=True, not because month 1 is in its negs.
+        assert entry['isNigs'] is False
+        assert 'SAINT_DAY' in entry['tags']
+
+    def test_saints_are_absent_without_christian_mode(self):
+        grid = MonthGrid.create(year=2016, month=9)  # mode defaults to None
+        flat = [d for d in grid['flat_days'] if d]
+        day1 = next(d for d in flat if d['ethiopian']['day'] == 1)
+        assert all(h['key'] != 'ledeta_mariam' for h in day1['holidays'])
+
+    def test_muslim_mode_injects_jummah_on_fridays(self):
+        grid = MonthGrid.create(year=2016, month=1, mode='muslim')
+        flat = [d for d in grid['flat_days'] if d]
+        fridays = [d for d in flat if d['weekday'] == 5]
+        assert len(fridays) > 0
+        for friday in fridays:
+            assert any(h['key'] == 'jummah' for h in friday['holidays'])
+        non_fridays = [d for d in flat if d['weekday'] != 5]
+        assert all(all(h['key'] != 'jummah' for h in d['holidays']) for d in non_fridays)
+
+    def test_public_mode_filters_to_public_holidays_only(self):
+        grid = MonthGrid.create(year=2016, month=1, mode='public')
+        flat = [d for d in grid['flat_days'] if d]
+        all_tags = [tag for d in flat for h in d['holidays'] for tag in h.get('tags', [])]
+        # Every holiday entry present should carry the 'public' tag.
+        for d in flat:
+            for h in d['holidays']:
+                assert 'public' in h.get('tags', [])
+
+
+class TestMonthGridNavigation:
+    def test_up_advances_one_month(self):
+        grid_instance = MonthGrid({'year': 2016, 'month': 9})
+        next_grid = grid_instance.up()
+        assert (next_grid.year, next_grid.month) == (2016, 10)
+
+    def test_up_rolls_over_pagume_into_new_year(self):
+        grid_instance = MonthGrid({'year': 2016, 'month': 13})
+        next_grid = grid_instance.up()
+        assert (next_grid.year, next_grid.month) == (2017, 1)
+
+    def test_down_retreats_one_month(self):
+        grid_instance = MonthGrid({'year': 2016, 'month': 9})
+        prev_grid = grid_instance.down()
+        assert (prev_grid.year, prev_grid.month) == (2016, 8)
+
+    def test_down_rolls_back_across_year_boundary(self):
+        grid_instance = MonthGrid({'year': 2016, 'month': 1})
+        prev_grid = grid_instance.down()
+        assert (prev_grid.year, prev_grid.month) == (2015, 13)
+
+    def test_up_returns_new_monthgrid_instance_not_mutated_self(self):
+        grid_instance = MonthGrid({'year': 2016, 'month': 9})
+        next_grid = grid_instance.up()
+        assert next_grid is not grid_instance
+        assert grid_instance.month == 9  # original untouched
+
+    def test_up_and_down_are_generatable(self):
+        grid_instance = MonthGrid({'year': 2016, 'month': 9})
+        generated = grid_instance.up().generate()
+        assert generated['month'] == 10
