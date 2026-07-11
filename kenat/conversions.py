@@ -9,7 +9,7 @@ from .utils import (
 from .exceptions import InvalidEthiopianDateError, InvalidGregorianDateError, KenatError
 
 
-def to_gc(eth_year, eth_month, eth_day):
+def toGC(eth_year, eth_month, eth_day):
     """
     Converts an Ethiopian date to its corresponding Gregorian date.
 
@@ -22,7 +22,7 @@ def to_gc(eth_year, eth_month, eth_day):
         datetime.date: The equivalent Gregorian date object.
     """
     # 1. Validate input types and date range 
-    validate_numeric_inputs('to_gc', eth_year=eth_year, eth_month=eth_month, eth_day=eth_day)
+    validate_numeric_inputs('toGC', eth_year=eth_year, eth_month=eth_month, eth_day=eth_day)
     if not 1 <= eth_month <= 13 or not 1 <= eth_day <= get_ethiopian_days_in_month(eth_year, eth_month):
         raise InvalidEthiopianDateError(eth_year, eth_month, eth_day)
 
@@ -36,12 +36,12 @@ def to_gc(eth_year, eth_month, eth_day):
     
     return new_year_date + datetime.timedelta(days=days_to_add)
 
-def to_ec(greg_year, greg_month, greg_day):
+def toEC(greg_year, greg_month, greg_day):
     """
     Converts a Gregorian date to the Ethiopian calendar (EC) date.
     """
     # 1. Validate input types
-    validate_numeric_inputs('to_ec', g_year=greg_year, g_month=greg_month, g_day=greg_day)
+    validate_numeric_inputs('toEC', g_year=greg_year, g_month=greg_month, g_day=greg_day)
     
     # 2. Validate date validity and range (1900-2100) to match original library
     try:
@@ -53,12 +53,12 @@ def to_ec(greg_year, greg_month, greg_day):
 
     # 3. Determine the corresponding Ethiopian year
     eth_year = greg_year - 8
-    greg_of_eth_new_year = to_gc(eth_year + 1, 1, 1)
+    greg_of_eth_new_year = toGC(eth_year + 1, 1, 1)
     if greg_date >= greg_of_eth_new_year:
         eth_year += 1
 
     # 4. Calculate the difference in days from that Ethiopian New Year
-    new_year_greg_date = to_gc(eth_year, 1, 1)
+    new_year_greg_date = toGC(eth_year, 1, 1)
     days_diff = (greg_date - new_year_greg_date).days
     
     # 5. Convert the day difference into Ethiopian month and day
@@ -96,6 +96,14 @@ def _jd_to_gregorian(jd):
     year = d - 4716 if month > 2 else d - 4715
     return datetime.date(year, month, day)
 
+# NOTE: The TS reference implementation (kenat/src/conversions.ts) derives Hijri
+# dates from the JS runtime's ICU islamic calendar (via `Intl.DateTimeFormat('en-TN-u-ca-islamic', ...)`),
+# whereas this port uses a fixed tabular Islamic calendar algorithm (see
+# _hijri_to_jd/_jd_to_hijri below) since Python has no equivalent built-in ICU
+# islamic-calendar binding. ICU's algorithm incorporates real lunar observation
+# tables and can disagree with any fixed tabular approximation by a day at some
+# month boundaries (e.g. Ramadan start/end). This is a known, accepted limitation
+# of this port, not a bug to chase down here.
 def _hijri_to_jd(year, month, day):
     """Converts a Hijri date to Julian Day Number."""
     # This is the corrected formula for the Tabular Islamic Calendar.
@@ -115,7 +123,7 @@ def _jd_to_hijri(jd):
     day = int(jd - (start_of_year + start_of_month)) + 1
     return {'year': year, 'month': month, 'day': day}
 
-def hijri_to_gregorian(h_year, h_month, h_day, gregorian_year):
+def hijriToGregorian(h_year, h_month, h_day, gregorian_year):
     """
     Converts a Hijri date to a Gregorian date by searching within a given Gregorian year.
     This mimics the brute-force search methodology of the original JavaScript code.
@@ -142,7 +150,7 @@ def hijri_to_gregorian(h_year, h_month, h_day, gregorian_year):
 
     return None
 
-def get_hijri_year(greg_date):
+def getHijriYear(greg_date):
     """Gets the Hijri year from a Gregorian date object."""
     jd = _gregorian_to_jd(greg_date.year, greg_date.month, greg_date.day)
     return _jd_to_hijri(jd)['year']

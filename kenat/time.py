@@ -1,4 +1,4 @@
-from .geez_converter import to_geez, to_arabic
+from .geez_converter import toGeez, toArabic
 from .constants import PERIOD_LABELS
 from .exceptions import InvalidTimeError
 from .utils import validate_numeric_inputs
@@ -79,7 +79,7 @@ class Time:
                 return int(s)
             except ValueError:
                 try:
-                    return to_arabic(s) # 
+                    return toArabic(s) # 
                 except Exception:
                     return float('nan') # 
         
@@ -162,13 +162,14 @@ class Time:
 
         # --- The rest of the logic works with the corrected defaults ---
 
-        hour_str = to_geez(self.hour) if use_geez else f"{self.hour:02d}"
+        hour_str = toGeez(self.hour) if use_geez else f"{self.hour:02d}"
         
         minute_str = ''
         if zero_as_dash and self.minute == 0:
+            # Matches TS Time.format's zeroAsDash rendering: a single underscore, not '--'.
             minute_str = '_'
         else:
-            minute_str = to_geez(self.minute) if use_geez else f"{self.minute:02d}"
+            minute_str = toGeez(self.minute) if use_geez else f"{self.minute:02d}"
 
         period_label = ''
         if show_period:

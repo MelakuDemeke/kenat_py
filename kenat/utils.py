@@ -31,6 +31,27 @@ def validate_ethiopian_date_object(date_obj, func_name, param_name):
         }
     )
 
+def validate_ethiopian_time_object(time_obj, func_name, param_name):
+    """
+    Validates that the input is a valid Ethiopian time object.
+
+    Raises:
+        InvalidInputTypeError: If the object is not a dict, has an invalid period,
+            or its hour/minute are not numbers.
+    """
+    if not isinstance(time_obj, dict):
+        raise InvalidInputTypeError(func_name, param_name, 'dict', time_obj)
+    period = time_obj.get('period')
+    if period not in ('day', 'night'):
+        raise InvalidInputTypeError(func_name, f'{param_name}.period', "'day' or 'night'", period)
+    validate_numeric_inputs(
+        func_name,
+        **{
+            f'{param_name}.hour': time_obj.get('hour'),
+            f'{param_name}.minute': time_obj.get('minute'),
+        }
+    )
+
 # --- Date Property Helpers ---
 
 def is_gregorian_leap_year(year):
@@ -61,7 +82,7 @@ def get_weekday(eth_date):
     """
     # Import locally to prevent circular dependency with the 'conversions' module
     from . import conversions
-    g = conversions.to_gc(eth_date['year'], eth_date['month'], eth_date['day'])
+    g = conversions.toGC(eth_date['year'], eth_date['month'], eth_date['day'])
     # The getDay() method in JS returns 0 for Sunday, which matches Python's isoweekday() % 7 behavior.
     # Python's weekday() is 0 for Monday. JS getDay() is 0 for Sunday.
     # The source new Date(...).getDay() is 0 for Sunday.
@@ -76,6 +97,15 @@ def is_valid_ethiopian_date(year, month, day):
     if not 1 <= day <= get_ethiopian_days_in_month(year, month):
         return False
     return True
+
+def get_ethiopian_new_year_for_gregorian(g_year):
+    """
+    Returns the Ethiopian New Year date that falls within the given Gregorian year.
+    """
+    validate_numeric_inputs('get_ethiopian_new_year_for_gregorian', gYear=g_year)
+    prev_g_year = g_year - 1
+    new_year_day = 12 if is_gregorian_leap_year(prev_g_year) else 11
+    return {'gregorianYear': g_year, 'month': 9, 'day': new_year_day}
 
 def get_gregorian_date_of_ethiopian_new_year(ethiopian_year):
     """

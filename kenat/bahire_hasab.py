@@ -1,6 +1,6 @@
 from .utils import validate_numeric_inputs, get_weekday
-from .day_arithmetic import add_days
-from .conversions import to_gc
+from .day_arithmetic import addDays
+from .conversions import toGC
 from .exceptions import UnknownHolidayError
 from .constants import (
     DAYS_OF_WEEK,
@@ -21,8 +21,11 @@ def _calculate_bahire_hasab_base(ethiopian_year):
     metene_rabiet = amete_alem // 4  
     medeb = amete_alem % 19  
     wenber = 18 if medeb == 0 else medeb - 1  
-    abektie = (wenber * 11) % 30  
-    metqi = (wenber * 19) % 30  
+    abektie = (wenber * 11) % 30
+    raw_metqi = (wenber * 19) % 30
+    # A raw remainder of 0 corresponds to day 30, not day 0 (there is no "day zero"
+    # in this calendar), matching TS's rawMetqi === 0 ? 30 : rawMetqi correction.
+    metqi = 30 if raw_metqi == 0 else raw_metqi
 
     beale_metqi_month = 1 if metqi > 14 else 2  
     beale_metqi_day = metqi  
@@ -53,7 +56,7 @@ def _calculate_bahire_hasab_base(ethiopian_year):
         'nineveh_date': nineveh_date,  
     }
 
-def get_bahire_hasab(ethiopian_year, lang='amharic'):
+def getBahireHasab(ethiopian_year, lang='amharic'):
     """
     Calculates all Bahire Hasab values for a given Ethiopian year. 
 
@@ -64,7 +67,7 @@ def get_bahire_hasab(ethiopian_year, lang='amharic'):
     Returns:
         dict: An object containing all the calculated Bahire Hasab values. 
     """
-    validate_numeric_inputs('get_bahire_hasab', ethiopian_year=ethiopian_year)  
+    validate_numeric_inputs('getBahireHasab', ethiopian_year=ethiopian_year)  
     
     base = _calculate_bahire_hasab_base(ethiopian_year)  
 
@@ -82,7 +85,7 @@ def get_bahire_hasab(ethiopian_year, lang='amharic'):
     for tewsak_key, tewsak_value in MOVABLE_HOLIDAY_TEWSAK.items():  
         holiday_key = tewsak_to_key_map.get(tewsak_key)  
         if holiday_key:  
-            date = add_days(base['nineveh_date'], tewsak_value)  
+            date = addDays(base['nineveh_date'], tewsak_value)  
             info = HOLIDAY_INFO.get(holiday_key, {})  
             rules = MOVABLE_HOLIDAYS.get(holiday_key, {})  
             
@@ -93,7 +96,7 @@ def get_bahire_hasab(ethiopian_year, lang='amharic'):
                 'name': info.get('name', {}).get(lang) or info.get('name', {}).get('english'),  
                 'description': info.get('description', {}).get(lang) or info.get('description', {}).get('english'),  
                 'ethiopian': date,  
-                'gregorian': to_gc(date['year'], date['month'], date['day'])  
+                'gregorian': toGC(date['year'], date['month'], date['day'])  
             }
 
     return {  
@@ -111,7 +114,7 @@ def get_bahire_hasab(ethiopian_year, lang='amharic'):
         'movableFeasts': movable_feasts
     }
 
-def get_movable_holiday(holiday_key, ethiopian_year):
+def getMovableHoliday(holiday_key, ethiopian_year):
     """
     Calculates the date of a movable holiday for a given year. 
 
@@ -122,7 +125,7 @@ def get_movable_holiday(holiday_key, ethiopian_year):
     Returns:
         dict: An Ethiopian date object {'year', 'month', 'day'}. 
     """
-    validate_numeric_inputs('get_movable_holiday', ethiopian_year=ethiopian_year)  
+    validate_numeric_inputs('getMovableHoliday', ethiopian_year=ethiopian_year)  
 
     tewsak = MOVABLE_HOLIDAY_TEWSAK.get(holiday_key)  
     if tewsak is None:  
@@ -130,4 +133,4 @@ def get_movable_holiday(holiday_key, ethiopian_year):
     
     base = _calculate_bahire_hasab_base(ethiopian_year)  
 
-    return add_days(base['nineveh_date'], tewsak) 
+    return addDays(base['nineveh_date'], tewsak)

@@ -136,8 +136,15 @@ HOLIDAY_INFO = {
   'moulid': {
     'name': {'amharic': 'መውሊድ', 'english': 'Birth of the Prophet'},
     'description': {'amharic': 'የነቢዩ ሙሐመድን የልደት በዓል ያከብራል።', 'english': 'Celebrates the birthday of the Prophet Mohammed.'}
+  },
+  'jummah': {
+    'name': {'amharic': 'ጁምዓ', 'english': 'Jummah'},
+    'description': {'amharic': 'ሳምንታዊ የሙስሊሞች የጋራ ስግደት።', 'english': 'The weekly Muslim congregational prayer.'}
   }
 }
+
+# Stable keys for holidays to avoid hardcoded strings in user code.
+HolidayNames = {key: key for key in HOLIDAY_INFO.keys()}
 
 # Bahire Hasab related constants
 EVANGELIST_NAMES = {
@@ -159,7 +166,7 @@ MOVABLE_HOLIDAYS = {
     'abiyTsome': {'tags': [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN]},
     'debreZeit': {'tags': [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN]},
     'hosanna': {'tags': [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN]},
-    'siklet': {'tags': [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN]},
+    'siklet': {'tags': [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN, HolidayTags.PUBLIC]},
     'fasika': {'tags': [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN]},
     'rikbeKahnat': {'tags': [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN]},
     'erget': {'tags': [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN]},
@@ -175,11 +182,81 @@ MOVABLE_HOLIDAYS = {
 FIXED_HOLIDAYS = {
     'enkutatash': { 'month': 1, 'day': 1, 'tags': [HolidayTags.PUBLIC, HolidayTags.CULTURAL] },
     'meskel': { 'month': 1, 'day': 17, 'tags': [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
-    'beherbehereseb': { 'month': 3, 'day': 20, 'tags': [HolidayTags.PUBLIC, HolidayTags.STATE] },
+    'beherbehereseb': { 'month': 3, 'day': 29, 'tags': [HolidayTags.PUBLIC, HolidayTags.STATE] },
     'gena': { 'month': 4, 'day': 29, 'tags': [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
     'timket': { 'month': 5, 'day': 11, 'tags': [HolidayTags.PUBLIC, HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN] },
     'martyrsDay': { 'month': 6, 'day': 12, 'tags': [HolidayTags.PUBLIC, HolidayTags.STATE] },
     'adwa': { 'month': 6, 'day': 23, 'tags': [HolidayTags.PUBLIC, HolidayTags.STATE] },
     'labour': { 'month': 8, 'day': 23, 'tags': [HolidayTags.PUBLIC, HolidayTags.STATE] },
     'patriots': { 'month': 8, 'day': 27, 'tags': [HolidayTags.PUBLIC, HolidayTags.STATE] },
+}
+
+# Canonical fasting keys and list to avoid hardcoded strings.
+class FastingKeys:
+    ABIY_TSOME = 'ABIY_TSOME'
+    TSOME_HAWARYAT = 'TSOME_HAWARYAT'
+    TSOME_NEBIYAT = 'TSOME_NEBIYAT'
+    NINEVEH = 'NINEVEH'
+    FILSETA = 'FILSETA'
+    RAMADAN = 'RAMADAN'
+    TSOME_DIHENET = 'TSOME_DIHENET'
+
+# Fasting metadata similar to HOLIDAY_INFO, with i18n-friendly names and descriptions.
+FASTING_INFO = {
+    'ABIY_TSOME': {
+        'name': {'amharic': 'ዐቢይ ጾም (ሁዳዴ)', 'english': 'Great Lent (Abiy Tsome)'},
+        'description': {
+            'amharic': 'ከፋሲካ በፊት የሚጾም 55 ቀናት የጾም ወቅት ነው።',
+            'english': 'A 55-day fasting season observed before Easter in the Ethiopian Orthodox Church.',
+        },
+        'tags': [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
+    },
+    'NINEVEH': {
+        'name': {'amharic': 'ጾመ ነነዌ', 'english': 'Fast of Nineveh'},
+        'description': {
+            'amharic': 'የነነዌ ሰዎች ለሰሩት ሐጢያት የእግዚአብሔርን ምህረትና ይቅርታ ለመጠየቅ የፆሙትን ለማስታወስ ነው።',
+            'english': 'A three-day fast commemorating the repentance of the people of Nineveh.',
+        },
+        'tags': [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
+    },
+    'TSOME_HAWARYAT': {
+        'name': {'amharic': 'ጾመ ሐዋርያት', 'english': "Apostles' Fast (Tsome Hawaryat)"},
+        'description': {
+            'amharic': 'ክርስቶስ ከሙታን ተለይቶ ከተነሳ በሃላ ቅዱሳን ሀዋርያት ሰማያዊ ተልእኮ ስለተሰማቸው ከ50ቀን በሃላ በበአለ ጰራቅሊጦስ ማግስት መፆም ጀመሩ።',
+            'english': 'Begins after Pentecost and lasts until Hamle 4 in the Ethiopian calendar.',
+        },
+        'tags': [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
+    },
+    'TSOME_NEBIYAT': {
+        'name': {'amharic': 'የገና-ፆም (ጾመ ነቢያት)', 'english': 'Fast of the Prophets (Tsome Nebiyat)'},
+        'description': {
+            'amharic': 'ከህዳር 15 እስከ ታሕሳስ 28 ድረስ የሚጠብቅ የቋሚ ጾም ነው።',
+            'english': 'A fixed fast observed from Hidar 15 to Tahsas 28.',
+        },
+        'tags': [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
+    },
+    'FILSETA': {
+        'name': {'amharic': 'ፍልሰታ', 'english': 'Filseta'},
+        'description': {
+            'amharic': 'ፆመ ፍልሰታ /ከነሐሴ 1 እስከ ነሐሴ 14 ቀን/ የእመቤታችን ዕረፍት፣ ትንሣኤና ዕርገቷ የሚታሰብበት ወቅት ነው፡፡',
+            'english': 'A fixed 14-day fast (Nehase 1-14) commemorating the Dormition, Resurrection, and Assumption of the Virgin Mary; a season of prayer and intercession.',
+        },
+        'tags': [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
+    },
+    'RAMADAN': {
+        'name': {'amharic': 'ረመዳን', 'english': 'Ramadan'},
+        'description': {
+            'amharic': 'ረመዳን በሂጅራ አቆጣጠር ዘጠነኛው ወር እና በሙስሊሞች ዘንድ የጾም፣ ጸሎት ወር ነው',
+            'english': 'The Islamic month of fasting from dawn to sunset; a time of prayer, reflection, and charity.',
+        },
+        'tags': [HolidayTags.RELIGIOUS, HolidayTags.MUSLIM],
+    },
+    'TSOME_DIHENET': {
+        'name': {'amharic': 'ጾመ ድኅነት (ረቡእ·ዓርብ)', 'english': 'Fast of Salvation (Wed & Fri)'},
+        'description': {
+            'amharic': 'ከበአለ ሀምሳ ውጭ በሳምንት ረቡእ እና አርብ የምንፆመው ነው።',
+            'english': 'A fast observed on Wednesdays and Fridays outside of the 50 days after Easter.',
+        },
+        'tags': [HolidayTags.RELIGIOUS, HolidayTags.CHRISTIAN],
+    },
 }

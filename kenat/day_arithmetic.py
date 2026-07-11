@@ -5,7 +5,7 @@ from .utils import (
     validate_ethiopian_date_object
 )
 
-def add_days(ethiopian, days):
+def addDays(ethiopian, days):
     """
     Adds a specified number of days to an Ethiopian date.
 
@@ -16,24 +16,32 @@ def add_days(ethiopian, days):
     Returns:
         dict: The resulting Ethiopian date.
     """
-    validate_ethiopian_date_object(ethiopian, 'add_days', 'ethiopian') # 
-    validate_numeric_inputs('add_days', days=days) # 
+    validate_ethiopian_date_object(ethiopian, 'addDays', 'ethiopian') # 
+    validate_numeric_inputs('addDays', days=days) # 
     
     # Create mutable copies
     year, month, day = ethiopian['year'], ethiopian['month'], ethiopian['day']
     day += days
 
-    # Roll over the days into months and years
-    while day > get_ethiopian_days_in_month(year, month): # 
-        day -= get_ethiopian_days_in_month(year, month) # 
-        month += 1 # 
-        if month > 13: # 
-            month = 1 # 
-            year += 1 # 
-            
+    # Roll over the days into months and years (moving forward)
+    while day > get_ethiopian_days_in_month(year, month): #
+        day -= get_ethiopian_days_in_month(year, month) #
+        month += 1 #
+        if month > 13: #
+            month = 1 #
+            year += 1 #
+
+    # Roll back across month/year boundaries (moving backward, for negative `days`)
+    while day <= 0:
+        month -= 1
+        if month < 1:
+            month = 13
+            year -= 1
+        day += get_ethiopian_days_in_month(year, month)
+
     return {'year': year, 'month': month, 'day': day}
 
-def add_months(ethiopian, months):
+def addMonths(ethiopian, months):
     """
     Adds a specified number of months to an Ethiopian date.
 
@@ -44,8 +52,8 @@ def add_months(ethiopian, months):
     Returns:
         dict: The resulting Ethiopian date.
     """
-    validate_ethiopian_date_object(ethiopian, 'add_months', 'ethiopian') # 
-    validate_numeric_inputs('add_months', months=months) # 
+    validate_ethiopian_date_object(ethiopian, 'addMonths', 'ethiopian') # 
+    validate_numeric_inputs('addMonths', months=months) # 
     
     year, month, day = ethiopian['year'], ethiopian['month'], ethiopian['day']
     
@@ -61,7 +69,7 @@ def add_months(ethiopian, months):
         
     return {'year': year, 'month': month, 'day': day}
 
-def add_years(ethiopian, years):
+def addYears(ethiopian, years):
     """
     Adds a specified number of years to an Ethiopian date.
 
@@ -72,8 +80,8 @@ def add_years(ethiopian, years):
     Returns:
         dict: The resulting Ethiopian date.
     """
-    validate_ethiopian_date_object(ethiopian, 'add_years', 'ethiopian') # 
-    validate_numeric_inputs('add_years', years=years) # 
+    validate_ethiopian_date_object(ethiopian, 'addYears', 'ethiopian') # 
+    validate_numeric_inputs('addYears', years=years) # 
 
     year, month, day = ethiopian['year'], ethiopian['month'], ethiopian['day']
     year += years # 
@@ -85,7 +93,7 @@ def add_years(ethiopian, years):
         
     return {'year': year, 'month': month, 'day': day}
 
-def diff_in_days(date_a, date_b):
+def diffInDays(date_a, date_b):
     """
     Calculates the difference in days between two Ethiopian dates.
 
@@ -96,8 +104,8 @@ def diff_in_days(date_a, date_b):
     Returns:
         int: The difference in days.
     """
-    validate_ethiopian_date_object(date_a, 'diff_in_days', 'a') # 
-    validate_ethiopian_date_object(date_b, 'diff_in_days', 'b') # 
+    validate_ethiopian_date_object(date_a, 'diffInDays', 'a') # 
+    validate_ethiopian_date_object(date_b, 'diffInDays', 'b') # 
 
     def total_days(eth_date): # 
         """Helper to count days from a fixed epoch (year 1, month 1, day 1)."""
@@ -114,12 +122,12 @@ def diff_in_days(date_a, date_b):
 
     return total_days(date_a) - total_days(date_b) # 
 
-def diff_in_months(date_a, date_b):
+def diffInMonths(date_a, date_b):
     """
     Calculates the difference in months between two Ethiopian dates.
     """
-    validate_ethiopian_date_object(date_a, 'diff_in_months', 'a') # 
-    validate_ethiopian_date_object(date_b, 'diff_in_months', 'b') # 
+    validate_ethiopian_date_object(date_a, 'diffInMonths', 'a') # 
+    validate_ethiopian_date_object(date_b, 'diffInMonths', 'b') # 
     
     total_months_a = date_a['year'] * 13 + (date_a['month'] - 1) # 
     total_months_b = date_b['year'] * 13 + (date_b['month'] - 1) # 
@@ -132,19 +140,89 @@ def diff_in_months(date_a, date_b):
         
     return diff
 
-def diff_in_years(date_a, date_b):
+def diffInYears(date_a, date_b):
     """
     Calculates the difference in years between two Ethiopian dates.
     """
-    validate_ethiopian_date_object(date_a, 'diff_in_years', 'a') # 
-    validate_ethiopian_date_object(date_b, 'diff_in_years', 'b') # 
-    
-    diff = date_a['year'] - date_b['year']
-    
-    # If the month/day of 'a' is earlier in the year than 'b',
-    # a full year has not yet passed.
-    if date_a['month'] < date_b['month'] or \
-       (date_a['month'] == date_b['month'] and date_a['day'] < date_b['day']): # 
-        diff -= 1 # 
-        
-    return diff
+    validate_ethiopian_date_object(date_a, 'diffInYears', 'a') #
+    validate_ethiopian_date_object(date_b, 'diffInYears', 'b') #
+
+    is_after = (
+        date_a['year'] > date_b['year']
+        or (date_a['year'] == date_b['year'] and date_a['month'] > date_b['month'])
+        or (
+            date_a['year'] == date_b['year']
+            and date_a['month'] == date_b['month']
+            and date_a['day'] >= date_b['day']
+        )
+    )
+
+    later, earlier = (date_a, date_b) if is_after else (date_b, date_a)
+    diff = later['year'] - earlier['year']
+
+    if later['month'] < earlier['month'] or (
+        later['month'] == earlier['month'] and later['day'] < earlier['day']
+    ):
+        diff -= 1
+
+    final_diff = diff if is_after else -diff
+
+    # Coerce -0 to 0 (Python ints don't have -0, but keep this for symmetry with TS).
+    return 0 if final_diff == 0 else final_diff
+
+
+def diffBreakdown(date_a, date_b, units=None):
+    """
+    Calculates a human-friendly breakdown between two Ethiopian dates.
+    Iteratively accumulates years, then months, then days to avoid off-by-one issues.
+
+    Args:
+        date_a (dict): First Ethiopian date {'year', 'month', 'day'}.
+        date_b (dict): Second Ethiopian date {'year', 'month', 'day'}.
+        units (list[str] | None): Units to include, in order. Defaults to
+            ['years', 'months', 'days'].
+
+    Returns:
+        dict: {'sign': 1 | -1, 'totalDays': int, 'years'?: int, 'months'?: int, 'days'?: int}
+    """
+    validate_ethiopian_date_object(date_a, 'diffBreakdown', 'a')
+    validate_ethiopian_date_object(date_b, 'diffBreakdown', 'b')
+
+    if units is None:
+        units = ['years', 'months', 'days']
+
+    total_days_diff = diffInDays(date_a, date_b)  # positive if a after b
+
+    sign = 1 if total_days_diff == 0 else (1 if total_days_diff > 0 else -1)
+    later = date_a if sign >= 0 else date_b
+    earlier = date_b if sign >= 0 else date_a
+
+    cursor = dict(earlier)
+    result = {'sign': sign, 'totalDays': abs(total_days_diff)}
+
+    if 'years' in units:
+        years = 0
+        while True:
+            next_date = addYears(cursor, 1)
+            if diffInDays(later, next_date) >= 0:
+                years += 1
+                cursor = next_date
+            else:
+                break
+        result['years'] = years
+
+    if 'months' in units:
+        months = 0
+        while True:
+            next_date = addMonths(cursor, 1)
+            if diffInDays(later, next_date) >= 0:
+                months += 1
+                cursor = next_date
+            else:
+                break
+        result['months'] = months
+
+    if 'days' in units:
+        result['days'] = abs(diffInDays(later, cursor))
+
+    return result
