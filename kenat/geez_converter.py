@@ -21,14 +21,21 @@ def toGeez(input_num):
     Raises:
         GeezConverterError: If the input is not a valid non-negative integer.
     """
-    if not isinstance(input_num, (int, str)):
+    if not isinstance(input_num, (int, float, str)) or isinstance(input_num, bool):
         raise GeezConverterError("Input must be a number or a string.")
 
     try:
-        num = int(input_num)
-        if num < 0:
-            raise ValueError
+        as_number = float(input_num) if isinstance(input_num, str) else input_num
     except (ValueError, TypeError):
+        raise GeezConverterError("Input must be a non-negative integer.")
+
+    # Mirrors JS's Number.isInteger: reject non-integer-valued floats (e.g. 3.7),
+    # but accept integer-valued floats (e.g. 3.0) same as an int.
+    if isinstance(as_number, float) and not as_number.is_integer():
+        raise GeezConverterError("Input must be a non-negative integer.")
+
+    num = int(as_number)
+    if num < 0:
         raise GeezConverterError("Input must be a non-negative integer.")
 
     if num == 0:

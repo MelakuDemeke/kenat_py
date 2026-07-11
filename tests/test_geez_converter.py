@@ -38,10 +38,17 @@ class TestToGeez:
     def test_rejects_invalid_input(self):
         with pytest.raises(GeezConverterError, match="Input must be a non-negative integer."):
             toGeez(-5)
-        with pytest.raises(GeezConverterError, match="Input must be a number or a string."):
+        # Matches TS's Number.isInteger check: 1.5 is a valid numeric *type* but not
+        # an integer *value*, so it fails the integer check specifically (not the
+        # number-or-string type check).
+        with pytest.raises(GeezConverterError, match="Input must be a non-negative integer."):
             toGeez(1.5)
         with pytest.raises(GeezConverterError, match="Input must be a number or a string."):
             toGeez(None)
+
+    def test_accepts_integer_valued_float(self):
+        # Matches JS's Number.isInteger(3.0) === True.
+        assert toGeez(3.0) == '፫'
 
 
 class TestToArabic:
