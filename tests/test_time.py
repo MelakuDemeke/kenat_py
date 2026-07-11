@@ -98,8 +98,10 @@ class TestTimeFormatting:
         assert time.format(use_geez=False, show_period=False) == '08:15'
         
     def test_format_with_dash_for_zero(self):
+        # Matches the TS reference implementation, which renders zero minutes as a
+        # single underscore '_' (not '--').
         time = Time(12, 0, 'day')
-        assert time.format(use_geez=False, zero_as_dash=True) == '12:-- day'
+        assert time.format(use_geez=False, zero_as_dash=True) == '12:_ day'
 
     def test_format_with_period_labels(self):
         time = Time(5, 30, 'day')

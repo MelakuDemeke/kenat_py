@@ -166,7 +166,8 @@ class Time:
         
         minute_str = ''
         if zero_as_dash and self.minute == 0:
-            minute_str = '--'
+            # Matches TS Time.format's zeroAsDash rendering: a single underscore, not '--'.
+            minute_str = '_'
         else:
             minute_str = toGeez(self.minute) if use_geez else f"{self.minute:02d}"
 
