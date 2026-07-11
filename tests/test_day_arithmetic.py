@@ -5,6 +5,7 @@ from kenat.day_arithmetic import (
     diffInDays,
     diffInMonths,
     diffInYears,
+    diffBreakdown,
 )
 
 class TestAddDays:
@@ -23,6 +24,33 @@ class TestAddDays:
         start_date = {'year': 2016, 'month': 13, 'day': 4}
         result = addDays(start_date, 3)
         assert result == {'year': 2017, 'month': 1, 'day': 2}
+
+
+class TestAddDaysNegative:
+    """Regression tests for the missing backward-rollover loop in addDays."""
+
+    def test_negative_days_within_same_month(self):
+        start_date = {'year': 2016, 'month': 1, 'day': 10}
+        result = addDays(start_date, -5)
+        assert result == {'year': 2016, 'month': 1, 'day': 5}
+
+    def test_negative_days_crossing_month_boundary(self):
+        start_date = {'year': 2016, 'month': 1, 'day': 3}
+        result = addDays(start_date, -5)
+        # 3 - 5 = -2 -> roll back into Pagume of the previous year (2015, a leap
+        # year, so Pagume has 6 days): 6 - 2 = 4.
+        assert result == {'year': 2015, 'month': 13, 'day': 4}
+
+    def test_negative_days_crossing_year_boundary(self):
+        start_date = {'year': 2017, 'month': 1, 'day': 2}
+        result = addDays(start_date, -3)
+        assert result == {'year': 2016, 'month': 13, 'day': 4}
+
+    def test_negative_days_is_inverse_of_positive(self):
+        start_date = {'year': 2016, 'month': 6, 'day': 15}
+        forward = addDays(start_date, 40)
+        back = addDays(forward, -40)
+        assert back == start_date
 
 
 class TestAddMonths:
@@ -143,3 +171,57 @@ class TestDiffInYears:
         a = {'year': 2018, 'month': 1, 'day': 1}
         b = {'year': 2016, 'month': 1, 'day': 1}
         assert diffInYears(a, b) == 2
+
+    def test_reversed_order_returns_negative(self):
+        # a earlier than b: diffInYears(a, b) should be the negation of
+        # diffInYears(b, a), not just `a.year - b.year` (which the old
+        # non-swap-based implementation got wrong once month/day ordering
+        # differed between the two dates).
+        a = {'year': 2016, 'month': 1, 'day': 1}
+        b = {'year': 2018, 'month': 1, 'day': 1}
+        assert diffInYears(a, b) == -2
+
+    def test_reversed_order_with_asymmetric_month_is_symmetric(self):
+        # a is chronologically earlier than b, and a's month (6) is *later in the
+        # year* than b's month (1) -- this is the case the old
+        # `date_a['year'] - date_b['year']` shortcut got wrong (it returned -2
+        # instead of -1) because it never swapped to determine which date is
+        # actually later before doing the month/day correction.
+        earlier = {'year': 2016, 'month': 6, 'day': 1}
+        later = {'year': 2018, 'month': 1, 'day': 1}
+        assert diffInYears(earlier, later) == -1
+        assert diffInYears(later, earlier) == 1
+
+
+class TestDiffBreakdown:
+    def test_same_date_returns_zero_breakdown(self):
+        a = {'year': 2016, 'month': 5, 'day': 15}
+        b = {'year': 2016, 'month': 5, 'day': 15}
+        result = diffBreakdown(a, b)
+        assert result == {'sign': 1, 'totalDays': 0, 'years': 0, 'months': 0, 'days': 0}
+
+    def test_breakdown_is_positive_when_a_is_later(self):
+        a = {'year': 2018, 'month': 3, 'day': 10}
+        b = {'year': 2016, 'month': 1, 'day': 1}
+        result = diffBreakdown(a, b)
+        assert result['sign'] == 1
+        assert result['years'] == 2
+        assert result['months'] == 2
+        assert result['days'] == 9
+
+    def test_breakdown_is_negative_when_a_is_earlier(self):
+        a = {'year': 2016, 'month': 1, 'day': 1}
+        b = {'year': 2018, 'month': 3, 'day': 10}
+        result = diffBreakdown(a, b)
+        assert result['sign'] == -1
+        assert result['years'] == 2
+        assert result['months'] == 2
+        assert result['days'] == 9
+
+    def test_breakdown_respects_units_subset(self):
+        a = {'year': 2018, 'month': 3, 'day': 10}
+        b = {'year': 2016, 'month': 1, 'day': 1}
+        result = diffBreakdown(a, b, units=['days'])
+        assert 'years' not in result
+        assert 'months' not in result
+        assert result['days'] == result['totalDays']
