@@ -66,3 +66,42 @@ class TestGregorianToEthiopian:
     def test_invalid_date_throws_error(self):
         with pytest.raises(InvalidGregorianDateError):
             toEC(2023, 2, 29) # Not a leap year
+
+
+class TestRoundTripFuzz:
+    """
+    Property-based regression coverage for toGC/toEC: convert a broad spread of
+    Ethiopian dates to Gregorian and back (and Gregorian dates to Ethiopian and
+    back), and confirm they round-trip to the same date. Per the divergence
+    report (kenat_py vs the TS reference), this is deliberately NOT a rewrite of
+    the conversion algorithm -- Python derives it differently than TS but should
+    produce identical output; this test guards against future regressions
+    without re-deriving the algorithm.
+    """
+
+    # Ethiopian year N maps to roughly Gregorian year N+7/8, so keep the upper
+    # bound comfortably below 2100 (toEC's supported range) to avoid the
+    # Gregorian side of the round trip legitimately falling out of range.
+    @pytest.mark.parametrize("eth_year", range(1900, 2091, 7))
+    def test_ethiopian_round_trip_across_years(self, eth_year):
+        for month in (1, 6, 13):
+            days_in_month = 6 if month == 13 else 30
+            for day in (1, min(15, days_in_month), days_in_month):
+                if day < 1:
+                    continue
+                try:
+                    gregorian = toGC(eth_year, month, day)
+                except InvalidEthiopianDateError:
+                    continue
+                back = toEC(gregorian.year, gregorian.month, gregorian.day)
+                assert back == {'year': eth_year, 'month': month, 'day': day}
+
+    @pytest.mark.parametrize("greg_year", range(1901, 2100, 7))
+    def test_gregorian_round_trip_across_years(self, greg_year):
+        for month, day in ((1, 1), (6, 15), (12, 31)):
+            try:
+                ethiopian = toEC(greg_year, month, day)
+            except InvalidGregorianDateError:
+                continue
+            back = toGC(ethiopian['year'], ethiopian['month'], ethiopian['day'])
+            assert back == datetime.date(greg_year, month, day)

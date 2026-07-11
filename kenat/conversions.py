@@ -96,6 +96,14 @@ def _jd_to_gregorian(jd):
     year = d - 4716 if month > 2 else d - 4715
     return datetime.date(year, month, day)
 
+# NOTE: The TS reference implementation (kenat/src/conversions.ts) derives Hijri
+# dates from the JS runtime's ICU islamic calendar (via `Intl.DateTimeFormat('en-TN-u-ca-islamic', ...)`),
+# whereas this port uses a fixed tabular Islamic calendar algorithm (see
+# _hijri_to_jd/_jd_to_hijri below) since Python has no equivalent built-in ICU
+# islamic-calendar binding. ICU's algorithm incorporates real lunar observation
+# tables and can disagree with any fixed tabular approximation by a day at some
+# month boundaries (e.g. Ramadan start/end). This is a known, accepted limitation
+# of this port, not a bug to chase down here.
 def _hijri_to_jd(year, month, day):
     """Converts a Hijri date to Julian Day Number."""
     # This is the corrected formula for the Tabular Islamic Calendar.
