@@ -27,7 +27,8 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://www.kenat.systems/"
+Homepage = "https://kenat.et"
+Documentation = "https://kenat.et/doc"
 "Bug Tracker" = "https://github.com/MelakuDemeke/kenat/issues"
 
 [project.optional-dependencies]
