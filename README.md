@@ -1,6 +1,6 @@
 # Kenat / ቀናት [![PyPI Version](https://img.shields.io/pypi/v/kenat)](https://pypi.org/project/kenat/)
 
-![banner](https://raw.githubusercontent.com/MelakuDemeke/kenat_py/master/assets/img/py_banner.png)
+![Kenat / ቀናት — Ethiopian calendar library for Python](https://raw.githubusercontent.com/MelakuDemeke/kenat_py/master/assets/img/kenat-py-banner.png)
 
 ![GitHub issues](https://img.shields.io/github/issues/MelakuDemeke/kenat_py)
 ![GitHub Repo stars](https://img.shields.io/github/stars/MelakuDemeke/kenat_py?logo=github&style=flat)
