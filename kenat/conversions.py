@@ -1,9 +1,9 @@
 import datetime
 import math
 from .utils import (
-    is_gregorian_leap_year,
     is_ethiopian_leap_year,
     get_ethiopian_days_in_month,
+    get_gregorian_date_of_ethiopian_new_year,
     validate_numeric_inputs
 )
 from .exceptions import InvalidEthiopianDateError, InvalidGregorianDateError, KenatError
@@ -27,9 +27,8 @@ def toGC(eth_year, eth_month, eth_day):
         raise InvalidEthiopianDateError(eth_year, eth_month, eth_day)
 
     # 2. Determine the Gregorian date of the Ethiopian New Year 
-    gregorian_year = eth_year + 7
-    new_year_day = 12 if is_gregorian_leap_year(gregorian_year + 1) else 11
-    new_year_date = datetime.date(gregorian_year, 9, new_year_day)
+    new_year = get_gregorian_date_of_ethiopian_new_year(eth_year)
+    new_year_date = datetime.date(new_year['gregorianYear'], new_year['month'], new_year['day'])
 
     # 3. Calculate days elapsed since the Ethiopian new year and add to the new year date 
     days_to_add = (eth_month - 1) * 30 + (eth_day - 1)

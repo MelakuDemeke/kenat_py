@@ -1,3 +1,4 @@
+import datetime
 from .exceptions import InvalidInputTypeError
 
 # --- Validation Helpers ---
@@ -103,18 +104,20 @@ def get_ethiopian_new_year_for_gregorian(g_year):
     Returns the Ethiopian New Year date that falls within the given Gregorian year.
     """
     validate_numeric_inputs('get_ethiopian_new_year_for_gregorian', gYear=g_year)
-    prev_g_year = g_year - 1
-    new_year_day = 12 if is_gregorian_leap_year(prev_g_year) else 11
-    return {'gregorianYear': g_year, 'month': 9, 'day': new_year_day}
+    # Meskerem 1 in September of Gregorian year G belongs to Ethiopian year G - 7.
+    return get_gregorian_date_of_ethiopian_new_year(g_year - 7)
 
 def get_gregorian_date_of_ethiopian_new_year(ethiopian_year):
     """
     Returns the Gregorian date of the Ethiopian New Year for the given Ethiopian year.
     """
     validate_numeric_inputs('get_gregorian_date_of_ethiopian_new_year', ethiopianYear=ethiopian_year)
-    gregorian_year = ethiopian_year + 7 
-    new_year_day = 12 if is_gregorian_leap_year(gregorian_year + 1) else 11
-    return {'gregorianYear': gregorian_year, 'month': 9, 'day': new_year_day}
+    # Count days from a known anchor (Meskerem 1, 1964 ET = Sep 12, 1971 GC) using the
+    # Ethiopian leap cycle (every 4th year, no century exception), so the result is
+    # correct outside 1900-2099 GC where the Gregorian leap rule would disagree.
+    days = 365 * (ethiopian_year - 1964) + ethiopian_year // 4 - 1964 // 4
+    date = datetime.date(1971, 9, 12) + datetime.timedelta(days=days)
+    return {'gregorianYear': date.year, 'month': date.month, 'day': date.day}
 
 def day_of_year(year, month, day):
     """Calculates the day of the year for a given Gregorian date."""

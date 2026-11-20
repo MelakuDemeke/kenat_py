@@ -4,7 +4,9 @@ from kenat.utils import (
     month_day_from_day_of_year,
     is_gregorian_leap_year,
     is_ethiopian_leap_year,
-    get_ethiopian_days_in_month
+    get_ethiopian_days_in_month,
+    get_ethiopian_new_year_for_gregorian,
+    get_gregorian_date_of_ethiopian_new_year
 )
 
 @pytest.mark.parametrize("year, month, day, expected_doy", [
@@ -65,3 +67,23 @@ class TestGetEthiopianDaysInMonth:
     @pytest.mark.parametrize("non_leap_year", [2010, 2012, 2013, 2014])
     def test_returns_5_for_pagume_in_non_leap_year(self, non_leap_year):
         assert get_ethiopian_days_in_month(non_leap_year, 13) == 5
+
+class TestEthiopianNewYearHelpers:
+    @pytest.mark.parametrize("eth_year, expected", [
+        (1876, {'gregorianYear': 1883, 'month': 9, 'day': 11}),
+        (1888, {'gregorianYear': 1895, 'month': 9, 'day': 11}),
+        (1892, {'gregorianYear': 1899, 'month': 9, 'day': 11}),
+        (1893, {'gregorianYear': 1900, 'month': 9, 'day': 11}),
+        (2016, {'gregorianYear': 2023, 'month': 9, 'day': 12}),
+        (2092, {'gregorianYear': 2099, 'month': 9, 'day': 12}),
+        (2093, {'gregorianYear': 2100, 'month': 9, 'day': 12}),
+    ])
+    def test_get_gregorian_date_of_ethiopian_new_year(self, eth_year, expected):
+        assert get_gregorian_date_of_ethiopian_new_year(eth_year) == expected
+
+    @pytest.mark.parametrize("g_year, expected_day", [
+        (1883, 11), (1895, 11), (1899, 11), (1900, 11),
+        (2023, 12), (2024, 11), (2099, 12), (2100, 12),
+    ])
+    def test_get_ethiopian_new_year_for_gregorian(self, g_year, expected_day):
+        assert get_ethiopian_new_year_for_gregorian(g_year) == {'gregorianYear': g_year, 'month': 9, 'day': expected_day}
