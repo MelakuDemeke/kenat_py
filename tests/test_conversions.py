@@ -105,3 +105,35 @@ class TestRoundTripFuzz:
                 continue
             back = toGC(ethiopian['year'], ethiopian['month'], ethiopian['day'])
             assert back == datetime.date(greg_year, month, day)
+
+class TestCenturyYearConversion:
+    """
+    Meskerem 1 must follow the Ethiopian leap cycle (year % 4 == 3, no century
+    exception), not the Gregorian leap rule, which only agrees for 1900-2099 GC.
+    """
+    def test_battle_of_adwa(self):
+        # Yekatit 23, 1888 ET -> Mar 1, 1896 GC
+        assert toGC(1888, 6, 23) == datetime.date(1896, 3, 1)
+
+    def test_pagume_and_new_year_around_2100(self):
+        assert toGC(2091, 13, 6) == datetime.date(2099, 9, 11)
+        assert toGC(2092, 1, 1) == datetime.date(2099, 9, 12)
+        assert toGC(2093, 1, 1) == datetime.date(2100, 9, 12)
+
+    @pytest.mark.parametrize("eth_year, expected", [
+        (1876, datetime.date(1883, 9, 11)),
+        (1888, datetime.date(1895, 9, 11)),
+        (1892, datetime.date(1899, 9, 11)),
+        (1893, datetime.date(1900, 9, 11)),
+    ])
+    def test_new_year_before_1900(self, eth_year, expected):
+        assert toGC(eth_year, 1, 1) == expected
+
+    def test_round_trip_every_day_in_supported_range(self):
+        # toEC supports 1900-01-01 .. 2100-12-31 GC
+        date = datetime.date(1900, 1, 1)
+        end = datetime.date(2100, 12, 31)
+        while date <= end:
+            ethiopian = toEC(date.year, date.month, date.day)
+            assert toGC(ethiopian['year'], ethiopian['month'], ethiopian['day']) == date
+            date += datetime.timedelta(days=1)
